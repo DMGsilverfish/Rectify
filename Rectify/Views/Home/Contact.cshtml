@@ -1,0 +1,63 @@
+﻿@using Rectify.Models;
+@using Rectify.Models.ViewModels;
+
+@model CustomerFeedbackViewModel
+
+@{
+    ViewData["Title"] = "Contact";
+    Layout = "_Layout";
+}
+<head>
+    <link rel="stylesheet" href="~/css/Customer.css" asp-append-version="true" />
+</head>
+<div class="container">
+    <div class="box">
+        <form asp-action="Contact" method="post">
+            <div class="form-group">
+                <label asp-for="SelectedUserId"></label>
+                <select asp-for="SelectedUserId" asp-items="Model.CompanyBranchOptions" class="form-control select2">
+                    <option value="">-- Select Company and Branch --</option>
+                </select>
+
+                <span asp-validation-for="SelectedUserId" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="CustomerName"></label>
+                <input asp-for="CustomerName" class="form-control" />
+                <span asp-validation-for="CustomerName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PhoneNumber"></label>
+                <input asp-for="PhoneNumber" class="form-control" />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Message"></label>
+                <textarea asp-for="Message" class="form-control" rows="5"></textarea>
+                <span asp-validation-for="Message" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-pink" style="margin-top: 20px; display: block; margin-left: auto; margin-right: auto;">Send Message</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2({
+                placeholder: "Select or search company and branch",
+                allowClear: true
+            });
+        });
+    </script>
+}

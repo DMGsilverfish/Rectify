@@ -1,0 +1,69 @@
+﻿@using Rectify.Models;
+@using Rectify.Models.ViewModels;
+@model CompanyRegisterViewModel;
+
+
+@{
+    ViewData["Title"] = "Register";
+    Layout = "_AccountLayout";
+}
+
+<div class="account-container">
+    <div class="account-box">
+        <h2 class="text-center mb-4">Register</h2>
+        <form asp-action="RegisterNext" asp-controller="Account" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="PrefferedContact" class="form-label"></label>
+                <select asp-for="PrefferedContact" class="form-select" required>
+                    <option value="">-- Select --</option>
+                    <option value="Email">Email</option>
+                    <option value="WhatsApp">WhatsApp</option>
+                </select>
+                <span asp-validation-for="PrefferedContact" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="City" class="form-label"></label>
+                <input asp-for="City" class="form-control" required/>
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="BranchAddress" class="form-label"></label>
+                <input asp-for="BranchAddress" class="form-control" required/>
+                <span asp-validation-for="BranchAddress" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="LogoImageFile" class="form-label"></label>
+                <input asp-for="LogoImageFile" class="form-control" type="file" accept="image/*" />
+                <span asp-validation-for="LogoImageFile" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="OwnerImageFile" class="form-label"></label>
+                <input asp-for="OwnerImageFile" class="form-control" type="file" accept="image/*" />
+                <span asp-validation-for="OwnerImageFile" class="text-danger"></span>
+            </div>
+            <div class="form-check mb-3">
+                <input asp-for="Reports" class="form-check-input" type="checkbox" />
+                <label asp-for="Reports" class="form-check-label"></label>
+                <span asp-validation-for="Reports" class="text-danger"></span>
+            </div>
+
+            <input type="submit" value="Register" class="btn btn-pink w-100 p-2" />
+
+            <p class="text-center mt-2">
+                Already have an account? <a asp-controller="Account" asp-action="Login" class="text-decoration-none">Login</a>
+            </p>
+
+            <div class="text-center">
+                <a asp-controller="Account" asp-action="Register" class="text-decoration-none mt-3">Back</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

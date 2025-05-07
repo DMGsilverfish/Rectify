@@ -1,0 +1,99 @@
+﻿body {
+    background-image: url('../images/MountainSignIn.jpg'); /* or your uploaded image */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    padding: 5rem 1rem;
+}
+
+.box {
+    background-color: rgba(255, 255, 255, 0.7); /* Transparency without affecting children */
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.3);
+    max-width: 500px;
+    width: 100%;
+    margin: 0 1rem;
+}
+
+select,
+select.form-control,
+.select-dropdown {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: white;
+    font-size: 1rem;
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+}
+
+/* Ensure full width and block-level display */
+.select2-container {
+    width: 100% !important;
+    display: block !important;
+    margin-top: 0.25rem; /* matches spacing under labels */
+}
+
+/* Make Select2 look like form-control */
+.select2-container--default .select2-selection--single {
+    height: 38px; /* match .form-control */
+    padding: 6px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: #fff;
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    box-sizing: border-box;
+}
+
+/* Align text in dropdown */
+.select2-selection__rendered {
+    line-height: 24px;
+    color: #495057;
+}
+
+/* Make arrow vertically centered */
+.select2-selection__arrow {
+    height: 100%;
+}
+
+
+.navbar {
+    background-color: rgba(255, 255, 255, 0.9); /* or use transparent + shadow */
+    backdrop-filter: blur(6px);
+}
+
+
+.btn-pink {
+    color: #fff;
+    background-color: #ff1493;
+    border-color: #ff1493;
+    border-radius: 0.25rem; /* Matches Bootstrap's default */
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+    .btn-pink:hover {
+        background-color: #e01384; /* Slightly darker pink */
+        border-color: #e01384;
+        color: #fff;
+    }
+
+    .btn-pink:active {
+        transform: scale(0.95);
+    }
+
+

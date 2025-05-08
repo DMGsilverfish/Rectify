@@ -1,12 +1,20 @@
 using System.Diagnostics;
+using System.Drawing.Imaging;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using QRCoder;
 using Rectify.Data;
 using Rectify.Models;
 using Rectify.Models.ViewModels;
+
+using QRCoder;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+
 
 namespace Rectify.Controllers
 {
@@ -37,6 +45,22 @@ namespace Rectify.Controllers
             var user = await userManager.GetUserAsync(User);
             return View(user);
         }
+
+        [Authorize]
+        public IActionResult GenerateQrCode(string userId)
+        {
+            var url = Url.Action("Contact", "Home", new { userId }, protocol: Request.Scheme);
+
+            using var qrGenerator = new QRCodeGenerator();
+            using var qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
+
+            var qrCode = new PngByteQRCode(qrCodeData);
+            var qrCodeImage = qrCode.GetGraphic(20); // This returns a byte[]
+
+            return File(qrCodeImage, "image/png");
+        }
+
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

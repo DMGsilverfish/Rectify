@@ -1,0 +1,19 @@
+﻿@model string
+
+<div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content text-center">
+            <div class="modal-header">
+                <h5 class="modal-title">Scan this QR Code</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <img id="qrImage" src="@Url.Action("GenerateQrCode", "Home", new { userId = Model })" alt="QR Code" class="img-fluid" style="max-height: 80vh;" />
+            </div>
+            <div class="modal-footer">
+                <button onclick="printQr()" class="btn btn-pink">Print QR</button>
+                <button class="btn btn-outline-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

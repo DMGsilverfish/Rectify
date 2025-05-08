@@ -60,6 +60,52 @@ namespace Rectify.Controllers
             return File(qrCodeImage, "image/png");
         }
 
+        [Authorize]
+        [HttpGet]
+        public IActionResult EditDetails(string userId)
+        {
+            var user = context.Users.FirstOrDefault(u => u.Id == userId);
+            if (user == null)
+            {
+                return Error();
+            }
+
+            var model = new EditDetailsViewModel
+            {
+                UserId = userId,
+                Name = user.FullName,
+                Email = user.Email,
+                PhoneNumber = user.PhoneNumber
+            };
+
+            return View(model);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditDetails(EditDetailsViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = context.Users.FirstOrDefault(u => u.Id == model.UserId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.FullName = model.Name;
+            user.Email = model.Email;
+            user.PhoneNumber = model.PhoneNumber;
+
+            context.SaveChanges();
+
+            return RedirectToAction("Privacy");
+        }
+
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

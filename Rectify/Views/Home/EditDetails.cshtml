@@ -1,9 +1,10 @@
-﻿@model ApplicationUser
+﻿@using Rectify.Models.ViewModels;
+@model EditDetailsViewModel
 
 @{
-    ViewData["Title"] = "Privacy";
+    ViewData["Title"] = "Edit Details";
     Layout = "_Layout";
-    var id = Model.Id;
+    var id = Model.UserId;
 }
 <head>
 
@@ -81,20 +82,16 @@
                 object-fit: cover;
             }
 
-
-
-
     </style>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-
 </head>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">Your Account Details</h2>
+    <h2 class="mb-0">Edit Details</h2>
 
     <div class="d-flex gap-2">
-        <a class="btn btn-pink" aria-current="page" href="#">Tickets</a>
-        <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a>
+        <a class="btn btn-outline-pink" href="@Url.Action("Privacy", "Home")">Tickets</a>
+        <a class="btn btn-pink" aria-current="page" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a>
         <a class="btn btn-outline-pink" href="@Url.Action("Report", "Account")">Report</a>
         <button class="btn btn-outline-pink" id="qr-btn" data-bs-toggle="modal" data-bs-target="#qrModal"
                 onclick="loadQrCode('@id')">
@@ -106,70 +103,30 @@
     </div>
 </div>
 
+<form asp-action="EditDetails" method="post">
+    @Html.AntiForgeryToken()
+    <input type="hidden" asp-for="UserId" />
 
+    <div class="mb-3">
+        <label asp-for="Name" class="form-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
 
-<table class="table table-bordered table-striped mt-3">
-    <tbody>
-        <tr>
-            <th>Full Name</th>
-            <td>@Model.FullName</td>
-        </tr>
-        <tr>
-            <th>Company Name</th>
-            <td>@Model.CompanyName</td>
-        </tr>
-        <tr>
-            <th>Email</th>
-            <td>@Model.Email</td>
-        </tr>
-        <tr>
-            <th>Phone Number</th>
-            <td>@Model.PhoneNumber</td>
-        </tr>
-        <tr>
-            <th>City</th>
-            <td>@Model.City</td>
-        </tr>
-        <tr>
-            <th>Branch Address</th>
-            <td>@Model.BranchAddress</td>
-        </tr>
-        <tr>
-            <th>Preferred Contact</th>
-            <td>@Model.PreferredContact</td>
-        </tr>
-        <tr>
-            <th>Reports</th>
-            <td>@(Model.Reports == true ? "Yes" : "No")</td>
-        </tr>
-        <tr>
-            <th>Owner Image</th>
-            <td>
-                @if (Model.OwnerImage != null)
-                {
-                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.OwnerImage)" alt="Owner Image" style="max-height: 150px;" />
-                }
-                else
-                {
-                    <span>No image provided</span>
-                }
-            </td>
-        </tr>
-        <tr>
-            <th>Logo Image</th>
-            <td>
-                @if (Model.LogoImage != null)
-                {
-                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.LogoImage)" alt="Logo Image" style="max-height: 150px;" />
-                }
-                else
-                {
-                    <span>No logo provided</span>
-                }
-            </td>
-        </tr>
-    </tbody>
-</table>
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label"></label>
+        <input asp-for="Email" class="form-control" />
+        <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="PhoneNumber" class="form-label"></label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-outline-pink">Save Changes</button>
+</form>
 
 <!-- QR Code Modal -->
 <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
@@ -227,3 +184,9 @@
         }
     }
 </script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

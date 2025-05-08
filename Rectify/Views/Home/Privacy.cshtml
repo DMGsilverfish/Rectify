@@ -1,6 +1,138 @@
-﻿@{
-    ViewData["Title"] = "Privacy Policy";
+﻿@model ApplicationUser
+@{
+    ViewData["Title"] = "Privacy";
+    Layout = "_Layout";
 }
-<h1>@ViewData["Title"]</h1>
+<head>
 
-<p>Use this page to detail your site's privacy policy.</p>
+    <style>
+
+        .btn-pink {
+            color: #fff;
+            background-color: #ff1493;
+            border-color: #ff1493;
+            border-radius: 0.25rem; /* Matches Bootstrap's default */
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+        }
+
+            .btn-pink:hover {
+                background-color: #e01384; /* Slightly darker pink */
+                border-color: #e01384;
+                color: #fff;
+            }
+
+            .btn-pink:active {
+                transform: scale(0.95);
+            }
+
+        .nav-pills .btn-pink {
+            border-radius: 50rem; /* pill shape */
+            padding: 0.4rem 1rem;
+            font-size: 0.95rem;
+            background-color: #ff1493;
+            color: white !important;
+        }
+
+            .nav-pills .btn-pink:hover {
+                background-color: #e01384;
+                color: white;
+            }
+
+        .btn-outline-pink {
+            color: #ff1493;
+            border: 2px solid #ff1493;
+            background-color: transparent;
+            border-radius: 0.25rem;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+        }
+
+            .btn-outline-pink:hover {
+                background-color: #ff1493;
+                color: #fff;
+                border-color: #ff1493;
+            }
+
+
+    </style>
+</head>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Your Account Details</h2>
+
+    <div class="d-flex gap-2">
+        <a class="btn btn-pink" aria-current="page" href="#">Tickets</a>
+        <a class="btn btn-outline-pink" href="@Url.Action("Edit", "Account")">Edit Details</a>
+        <a class="btn btn-outline-pink" href="@Url.Action("Report", "Account")">Report</a>
+    </div>
+</div>
+
+
+
+<table class="table table-bordered table-striped mt-3">
+    <tbody>
+        <tr>
+            <th>Full Name</th>
+            <td>@Model.FullName</td>
+        </tr>
+        <tr>
+            <th>Company Name</th>
+            <td>@Model.CompanyName</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>@Model.Email</td>
+        </tr>
+        <tr>
+            <th>Phone Number</th>
+            <td>@Model.PhoneNumber</td>
+        </tr>
+        <tr>
+            <th>City</th>
+            <td>@Model.City</td>
+        </tr>
+        <tr>
+            <th>Branch Address</th>
+            <td>@Model.BranchAddress</td>
+        </tr>
+        <tr>
+            <th>Preferred Contact</th>
+            <td>@Model.PreferredContact</td>
+        </tr>
+        <tr>
+            <th>Reports</th>
+            <td>@(Model.Reports == true ? "Yes" : "No")</td>
+        </tr>
+        <tr>
+            <th>Owner Image</th>
+            <td>
+                @if (Model.OwnerImage != null)
+                {
+                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.OwnerImage)" alt="Owner Image" style="max-height: 150px;" />
+                }
+                else
+                {
+                    <span>No image provided</span>
+                }
+            </td>
+        </tr>
+        <tr>
+            <th>Logo Image</th>
+            <td>
+                @if (Model.LogoImage != null)
+                {
+                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.LogoImage)" alt="Logo Image" style="max-height: 150px;" />
+                }
+                else
+                {
+                    <span>No logo provided</span>
+                }
+            </td>
+        </tr>
+    </tbody>
+</table>

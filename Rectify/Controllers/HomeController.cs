@@ -32,9 +32,10 @@ namespace Rectify.Controllers
         }
 
         [Authorize]
-        public IActionResult Privacy()
+        public async Task<IActionResult> Privacy()
         {
-            return View();
+            var user = await userManager.GetUserAsync(User);
+            return View(user);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

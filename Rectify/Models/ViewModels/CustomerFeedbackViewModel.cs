@@ -27,6 +27,10 @@ namespace Rectify.Models.ViewModels
 
         [Required(ErrorMessage = "Message is required.")]
         public string Message { get; set; }
+
+        public string? LogoImageBase64 { get; set; }
+        public string? OwnerImageBase64 { get; set; }
+
     }
 
 }

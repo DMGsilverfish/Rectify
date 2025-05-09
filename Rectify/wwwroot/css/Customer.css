@@ -96,4 +96,13 @@ select.form-control,
         transform: scale(0.95);
     }
 
+.rounded-image {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #ff1493; /* Optional: pink border for styling */
+}
+
+
 

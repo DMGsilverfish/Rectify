@@ -67,7 +67,7 @@ namespace Rectify.Controllers
             var user = context.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
             {
-                return Error();
+                return NotFound();
             }
 
             var model = new EditDetailsViewModel
@@ -75,7 +75,12 @@ namespace Rectify.Controllers
                 UserId = userId,
                 Name = user.FullName,
                 Email = user.Email,
-                PhoneNumber = user.PhoneNumber
+                PhoneNumber = user.PhoneNumber,
+                City = user.City,
+                BranchAddress = user.BranchAddress,
+                CompanyName = user.CompanyName,
+                PreferredContact = user.PreferredContact,
+                Reports = (bool)user.Reports
             };
 
             return View(model);
@@ -90,18 +95,33 @@ namespace Rectify.Controllers
             {
                 return View(model);
             }
+            var duplicate = userManager.Users.Any(u =>
+                u.Id != model.UserId &&
+                u.CompanyName == model.CompanyName &&
+                u.BranchAddress == model.BranchAddress);
 
-            var user = context.Users.FirstOrDefault(u => u.Id == model.UserId);
-            if (user == null)
+            if (duplicate)
             {
-                return NotFound();
+                ModelState.AddModelError("", "A company with that name and branch address already exists.");
+                return View(model);
             }
+
+            var user = userManager.Users.FirstOrDefault(u => u.Id == model.UserId);
+            if (user == null)
+                return NotFound();
 
             user.FullName = model.Name;
             user.Email = model.Email;
             user.PhoneNumber = model.PhoneNumber;
+            user.City = model.City;
+            user.BranchAddress = model.BranchAddress;
+            user.CompanyName = model.CompanyName;
+            user.PreferredContact = model.PreferredContact;
+            user.Reports = model.Reports;
 
             context.SaveChanges();
+
+            //add in the option to change the image
 
             return RedirectToAction("Privacy");
         }
@@ -113,6 +133,9 @@ namespace Rectify.Controllers
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
+
+        
+
 
         public IActionResult Contact(string? userId)
         {
@@ -127,14 +150,58 @@ namespace Rectify.Controllers
                 
                 .ToList();
 
+            string? logoBase64 = null;
+            string? ownerBase64 = null;
+
+            if (!string.IsNullOrEmpty(userId))
+            {
+                var selectedUser = userManager.Users.FirstOrDefault(u => u.Id == userId);
+
+                if (selectedUser != null)
+                {
+                    if (selectedUser.LogoImage != null)
+                        logoBase64 = $"data:image/png;base64,{Convert.ToBase64String(selectedUser.LogoImage)}";
+
+                    if (selectedUser.OwnerImage != null)
+                        ownerBase64 = $"data:image/png;base64,{Convert.ToBase64String(selectedUser.OwnerImage)}";
+                }
+            }
+
             var model = new CustomerFeedbackViewModel
             {
                 CompanyBranchOptions = companyUsers,
-                SelectedUserId = userId
+                SelectedUserId = userId,
+                LogoImageBase64 = logoBase64,
+                OwnerImageBase64 = ownerBase64
+                
             };
 
             return View(model);
         }
+
+        [HttpGet]
+        public IActionResult GetCompanyImages(string userId)
+        {
+            // Get the user from the database using the userId
+            var company = userManager.Users.FirstOrDefault(u => u.Id == userId);
+
+            Console.WriteLine($"LogoImage: {(company.LogoImage != null ? "Yes" : "No")}");
+            Console.WriteLine($"OwnerImage: {(company.OwnerImage != null ? "Yes" : "No")}");
+
+
+            if (company != null)
+            {
+                var model = new
+                {
+                    LogoImageBase64 = company.LogoImage != null ? "data:image/png;base64," + Convert.ToBase64String(company.LogoImage) : null,
+                    OwnerImageBase64 = company.OwnerImage != null ? "data:image/png;base64," + Convert.ToBase64String(company.OwnerImage) : null
+                };
+                return Json(model);
+            }
+
+            return Json(new { LogoImageBase64 = (string)null, OwnerImageBase64 = (string)null });
+        }
+
 
         [HttpPost]
         public IActionResult Contact(CustomerFeedbackViewModel model)

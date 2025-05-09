@@ -1,6 +1,7 @@
 ﻿@using Rectify.Models;
 @using Rectify.Models.ViewModels;
 
+
 @model CustomerFeedbackViewModel
 
 @{
@@ -13,9 +14,20 @@
 <div class="container">
     <div class="box">
         <form asp-action="Contact" method="post">
+
+            <div style="display: flex; gap: 20px; align-items: center;">
+                <div id="logoContainer" style="display: @(Model.LogoImageBase64 != null ? "block" : "none")">
+                    <img id="companyLogo" src="@Model.LogoImageBase64" class="rounded-image" />
+                </div>
+
+                <div id="ownerImageContainer" style="display: @(Model.OwnerImageBase64 != null ? "block" : "none")">
+                    <img id="ownerImage" src="@Model.OwnerImageBase64" class="rounded-image" />
+                </div>
+            </div>
+
             <div class="form-group">
                 <label asp-for="SelectedUserId"></label>
-                <select asp-for="SelectedUserId" asp-items="Model.CompanyBranchOptions" class="form-control select2">
+                <select asp-for="SelectedUserId" asp-items="Model.CompanyBranchOptions" class="form-control select2" id="companyBranchSelect">
                     <option value="">-- Select Company and Branch --</option>
                 </select>
 
@@ -59,5 +71,44 @@
                 allowClear: true
             });
         });
+
+        // Listen for change in the dropdown
+            $('#companyBranchSelect').change(function () {
+                var selectedUserId = $(this).val();
+
+                if (selectedUserId) {
+                    // Make an AJAX request to fetch the logo and owner image
+                    $.ajax({
+                        url: '@Url.Action("GetCompanyImages", "Home")',
+                        type: 'GET',
+                        data: { userId: selectedUserId },
+                        success: function (data) {
+                            // Update images with the new data
+                            if (data.logoImageBase64) {
+                                $('#companyLogo').attr('src', data.logoImageBase64);
+                                $('#logoContainer').show();
+                            } else {
+                                $('#logoContainer').hide();
+                            }
+
+                            if (data.ownerImageBase64) {
+                                $('#ownerImage').attr('src', data.ownerImageBase64);
+                                $('#ownerImageContainer').show();
+                            } else {
+                                $('#ownerImageContainer').hide();
+                            }
+                        },
+                        error: function () {
+                            console.error('Error fetching images.');
+                        }
+                    });
+                } else {
+                    // Hide images if no company is selected
+                    $('#logoContainer').hide();
+                    $('#ownerImageContainer').hide();
+                }
+            });
+        
+
     </script>
 }

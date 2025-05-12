@@ -14,6 +14,7 @@ using QRCoder;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Security.Claims;
 
 
 namespace Rectify.Controllers
@@ -62,7 +63,7 @@ namespace Rectify.Controllers
 
         [Authorize]
         [HttpGet]
-        public IActionResult EditDetails(string userId)
+        public IActionResult EditDetails(string userId) //ApplicationUser ID
         {
             var user = context.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
@@ -76,9 +77,6 @@ namespace Rectify.Controllers
                 Name = user.FullName,
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
-                City = user.City,
-                BranchAddress = user.BranchAddress,
-                CompanyName = user.CompanyName,
                 PreferredContact = user.PreferredContact,
                 Reports = (bool)user.Reports
             };
@@ -95,16 +93,7 @@ namespace Rectify.Controllers
             {
                 return View(model);
             }
-            var duplicate = userManager.Users.Any(u =>
-                u.Id != model.UserId &&
-                u.CompanyName == model.CompanyName &&
-                u.BranchAddress == model.BranchAddress);
-
-            if (duplicate)
-            {
-                ModelState.AddModelError("", "A company with that name and branch address already exists.");
-                return View(model);
-            }
+            
 
             var user = userManager.Users.FirstOrDefault(u => u.Id == model.UserId);
             if (user == null)
@@ -113,9 +102,6 @@ namespace Rectify.Controllers
             user.FullName = model.Name;
             user.Email = model.Email;
             user.PhoneNumber = model.PhoneNumber;
-            user.City = model.City;
-            user.BranchAddress = model.BranchAddress;
-            user.CompanyName = model.CompanyName;
             user.PreferredContact = model.PreferredContact;
             user.Reports = model.Reports;
 
@@ -134,43 +120,121 @@ namespace Rectify.Controllers
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
-        
-
-
-        public IActionResult Contact(string? userId)
+        [Authorize]
+        [HttpGet]
+        public IActionResult EditCompanyDetails(int companyID, string userId)
         {
-            var companyUsers = userManager.Users
-                .Where(u => u.CompanyName != null && u.BranchAddress != null)
-                .OrderBy(u => u.CompanyName)
-                .Select(u => new SelectListItem
+            var company = context.CompanyModel.FirstOrDefault(c => c.Id == companyID);
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (company == null)
+            {
+                return NotFound();
+            }
+            var viewModel = new CompanyDetailsViewModel
+            {
+                UserId = currentUserId,
+                Company = company
+            };
+
+            return View(viewModel);
+        }
+
+        [Authorize]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult EditCompanyDetails(CompanyDetailsViewModel model, IFormFile? logoFile)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            // Check for duplicate company name AND branch address
+            bool isDuplicate = context.CompanyModel.Any(c =>
+                c.Id != model.Company.Id &&
+                c.CompanyName == model.Company.CompanyName &&
+                c.BranchAddress == model.Company.BranchAddress);
+
+            if (isDuplicate)
+            {
+                ModelState.AddModelError("", "A company with the same name and branch address already exists.");
+                return View(model);
+            }
+
+            var company = context.CompanyModel.FirstOrDefault(c => c.Id == model.Company.Id);
+            if (company == null)
+                return NotFound();
+
+            company.CompanyName = model.Company.CompanyName;
+            company.City = model.Company.City;
+            company.BranchAddress = model.Company.BranchAddress;
+
+            if (logoFile != null && logoFile.Length > 0)
+            {
+                using (var ms = new MemoryStream())
                 {
-                    Value = u.Id,
-                    Text = $"{u.CompanyName} - {u.BranchAddress}"
+                    logoFile.CopyTo(ms);
+                    company.LogoImage = ms.ToArray();
+                }
+            }
+
+            context.SaveChanges();
+
+            TempData["SuccessMessage"] = "Company details updated successfully!";
+
+            return RedirectToAction("EditCompanyDetails", new { companyID = company.Id, userId = model.UserId });
+        }
+
+
+        [HttpGet]
+        public IActionResult GetUserCompanies(string userId)
+        {
+            var companies = context.CompanyModel
+                .Where(c => c.UserId == userId)
+                .Select(c => new { c.Id, c.CompanyName, c.BranchAddress })
+                .ToList();
+
+            return Json(companies);
+        }
+
+
+
+        public IActionResult Contact(int? companyId)
+        {
+            var companies = context.CompanyModel
+                .Include(c => c.User) // Assuming navigation property exists
+                .OrderBy(c => c.CompanyName)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = $"{c.CompanyName} - {c.BranchAddress}"
                 })
-                
                 .ToList();
 
             string? logoBase64 = null;
             string? ownerBase64 = null;
 
-            if (!string.IsNullOrEmpty(userId))
+            if (companyId.HasValue)
             {
-                var selectedUser = userManager.Users.FirstOrDefault(u => u.Id == userId);
+                var selectedCompany = context.CompanyModel
+                    .Include(c => c.User)
+                    .FirstOrDefault(c => c.Id == companyId.Value);
 
-                if (selectedUser != null)
+                if (selectedCompany?.User != null)
                 {
-                    if (selectedUser.LogoImage != null)
-                        logoBase64 = $"data:image/png;base64,{Convert.ToBase64String(selectedUser.LogoImage)}";
+                    if (selectedCompany.LogoImage != null)
+                        logoBase64 = $"data:image/png;base64,{Convert.ToBase64String(selectedCompany.LogoImage)}";
 
-                    if (selectedUser.OwnerImage != null)
-                        ownerBase64 = $"data:image/png;base64,{Convert.ToBase64String(selectedUser.OwnerImage)}";
+                    if (selectedCompany.User.OwnerImage != null)
+                        ownerBase64 = $"data:image/png;base64,{Convert.ToBase64String(selectedCompany.User.OwnerImage)}";
                 }
             }
 
             var model = new CustomerFeedbackViewModel
             {
-                CompanyBranchOptions = companyUsers,
-                SelectedUserId = userId,
+                //CompanyBranchOptions = companyUsers,
+                CompanyBranchOptions = companies,
+                SelectedCompanyId = companyId,
                 LogoImageBase64 = logoBase64,
                 OwnerImageBase64 = ownerBase64
                 
@@ -180,27 +244,29 @@ namespace Rectify.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetCompanyImages(string userId)
+        public IActionResult GetCompanyImages(int companyId)
         {
-            // Get the user from the database using the userId
-            var company = userManager.Users.FirstOrDefault(u => u.Id == userId);
+            var company = context.CompanyModel
+                .Include(c => c.User)
+                .FirstOrDefault(c => c.Id == companyId);
 
-            Console.WriteLine($"LogoImage: {(company.LogoImage != null ? "Yes" : "No")}");
-            Console.WriteLine($"OwnerImage: {(company.OwnerImage != null ? "Yes" : "No")}");
-
+            Console.WriteLine($"LogoImage: {(company?.LogoImage != null ? "Yes" : "No")}");
+            Console.WriteLine($"OwnerImage: {(company?.User?.OwnerImage != null ? "Yes" : "No")}");
 
             if (company != null)
             {
                 var model = new
                 {
                     LogoImageBase64 = company.LogoImage != null ? "data:image/png;base64," + Convert.ToBase64String(company.LogoImage) : null,
-                    OwnerImageBase64 = company.OwnerImage != null ? "data:image/png;base64," + Convert.ToBase64String(company.OwnerImage) : null
+                    OwnerImageBase64 = company.User?.OwnerImage != null ? "data:image/png;base64," + Convert.ToBase64String(company.User.OwnerImage) : null
                 };
+
                 return Json(model);
             }
 
-            return Json(new { LogoImageBase64 = (string)null, OwnerImageBase64 = (string)null });
+            return Json(new { LogoImageBase64 = (string?)null, OwnerImageBase64 = (string?)null });
         }
+
 
 
         [HttpPost]
@@ -209,13 +275,12 @@ namespace Rectify.Controllers
             if (!ModelState.IsValid)
             {
                 // Reload dropdown on postback
-                model.CompanyBranchOptions = userManager.Users
-                    .Where(u => u.CompanyName != null && u.BranchAddress != null)
-                    .OrderBy(u => u.CompanyName)
-                    .Select(u => new SelectListItem
+                model.CompanyBranchOptions = context.CompanyModel
+                    .OrderBy(c => c.CompanyName)
+                    .Select(c => new SelectListItem
                     {
-                        Value = u.Id,
-                        Text = $"{u.CompanyName} - {u.BranchAddress}"
+                        Value = c.Id.ToString(),
+                        Text = $"{c.CompanyName} - {c.BranchAddress}"
                     })
                     .ToList();
 
@@ -223,23 +288,18 @@ namespace Rectify.Controllers
             }
 
 
-            string companyID = model.SelectedUserId!;
-            string name = model.CustomerName;
-            string email = model.Email;
-            string phone = model.PhoneNumber;
-            string message = model.Message;
+            int companyId = model.SelectedCompanyId!.Value;
             DateTime currentDate = DateTime.Now;
 
             string dateString = currentDate.ToString("yyyyMMdd");
-
             int ticketCountToday = context.TicketModel.Count(t => t.DateOfMessage.Date == currentDate.Date);
-            string ticketNumber = (ticketCountToday + 1).ToString("D5"); // 5-digit padded
+            string ticketNumber = (ticketCountToday + 1).ToString("D5");
             string ticketID = $"{dateString}_{ticketNumber}";
 
             var ticket = new TicketModel
             {
                 TicketID = ticketID,
-                CompanyID = companyID,
+                CompanyID = companyId, // Or use int if your CompanyID is now int
                 DateOfMessage = currentDate,
                 Status = "Open",
                 DateLastUpdated = currentDate
@@ -250,15 +310,14 @@ namespace Rectify.Controllers
             var customer = new CustomerModel
             {
                 TicketID = ticketID,
-                CustomerName = name,
-                CustomerEmail = email,
-                CustomerPhone = phone,
-                Message = message
+                CustomerName = model.CustomerName,
+                CustomerEmail = model.Email,
+                CustomerPhone = model.PhoneNumber,
+                Message = model.Message
             };
 
             context.CustomerModel.Add(customer);
             context.SaveChanges();
-
 
             return RedirectToAction("ThankYou");
         }

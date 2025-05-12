@@ -85,7 +85,6 @@ namespace Rectify.Controllers
 
             // Copy step 1 data back into final model
             model.Name = step1Data!.Name;
-            model.CompanyName = step1Data.CompanyName;
             model.Email = step1Data.Email;
             model.PhoneNumber = step1Data.PhoneNumber;
             model.Password = step1Data.Password;
@@ -98,9 +97,9 @@ namespace Rectify.Controllers
             }
 
             // Check uniqueness: no duplicate CompanyName+BranchAddress
-            var exists = context.Users.Any(u =>
-                u.CompanyName == model.CompanyName &&
-                u.BranchAddress == model.BranchAddress);
+            var exists = context.CompanyModel.Any(c =>
+                c.CompanyName == model.CompanyName &&
+                c.BranchAddress == model.BranchAddress);
 
             if (exists)
             {
@@ -115,19 +114,26 @@ namespace Rectify.Controllers
                 UserName = model.Email,
                 Email = model.Email,
                 FullName = model.Name,
-                CompanyName = model.CompanyName,
                 PhoneNumber = model.PhoneNumber,
                 PreferredContact = model.PrefferedContact,
+                Reports = model.Reports
+                
+            };
+            var result = await userManager.CreateAsync(user, model.Password);
+
+            var company = new CompanyModel
+            {
+                CompanyName = model.CompanyName,
                 City = model.City,
                 BranchAddress = model.BranchAddress,
-                Reports = model.Reports
+                UserId = user.Id,
             };
 
             if (model.LogoImageFile != null)
             {
                 using var ms = new MemoryStream();
                 await model.LogoImageFile.CopyToAsync(ms);
-                user.LogoImage = ms.ToArray();
+                company.LogoImage = ms.ToArray();
             }
 
             if (model.OwnerImageFile != null)
@@ -137,9 +143,14 @@ namespace Rectify.Controllers
                 user.OwnerImage = ms.ToArray();
             }
 
-            var result = await userManager.CreateAsync(user, model.Password);
+            
             if (result.Succeeded)
             {
+                
+                context.CompanyModel.Add(company);
+                await context.SaveChangesAsync();
+
+
                 await signInManager.SignInAsync(user, false);
                 return RedirectToAction("Index", "Home");
             }

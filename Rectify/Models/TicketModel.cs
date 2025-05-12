@@ -8,7 +8,7 @@ namespace Rectify.Models
         [Key]
         public required string TicketID { get; set; }
         [Required]
-        public required string CompanyID { get; set; }
+        public required int CompanyID { get; set; }
 
         [Required]
         public DateTime DateOfMessage { get; set; }

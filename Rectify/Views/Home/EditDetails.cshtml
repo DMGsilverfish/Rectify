@@ -92,6 +92,10 @@
     <div class="d-flex gap-2">
         <a class="btn btn-outline-pink" href="@Url.Action("Privacy", "Home")">Tickets</a>
         <a class="btn btn-pink" aria-current="page" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a>
+        <button type="button" class="btn btn-outline-pink" onclick="handleEditCompany('@Model.UserId')">
+            Edit Company Details
+        </button>
+
         <a class="btn btn-outline-pink" href="@Url.Action("Report", "Account")">Report</a>
         <button class="btn btn-outline-pink" id="qr-btn" data-bs-toggle="modal" data-bs-target="#qrModal"
                 onclick="loadQrCode('@id')">
@@ -116,23 +120,6 @@
 <form asp-action="EditDetails" method="post">
     @Html.AntiForgeryToken()
     <input type="hidden" asp-for="UserId" />
-
-    <div class="mb-3">
-        <label asp-for="CompanyName" class="form-label">Company Name:</label>
-        <input asp-for="CompanyName" class="form-control" />
-        <span asp-validation-for="CompanyName" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="BranchAddress" class="form-label">Branch or Address:</label>
-        <input asp-for="BranchAddress" class="form-control" />
-        <span asp-validation-for="BranchAddress" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="City" class="form-label">City:</label>
-        <input asp-for="City" class="form-control" />
-        <span asp-validation-for="City" class="text-danger"></span>
-    </div>
 
     <div class="mb-3">
         <label asp-for="Name" class="form-label">Full Name:</label>
@@ -190,6 +177,20 @@
     </div>
 </div>
 
+<!-- Modal for selecting a company -->
+<div class="modal fade" id="companySelectModal" tabindex="-1" aria-labelledby="companySelectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select a Company to Edit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="company-list">
+                <!-- Company buttons will be inserted here -->
+            </div>
+        </div>
+    </div>
+</div>
 
 
 <script>
@@ -225,6 +226,39 @@
                 .then(() => alert("Link copied to clipboard!"))
                 .catch(err => console.error("Failed to copy link: ", err));
         }
+    }
+
+    function handleEditCompany(userId) {
+        fetch(`/Home/GetUserCompanies?userId=${encodeURIComponent(userId)}`)
+            .then(res => res.json())
+            .then(companies => {
+                if (companies.length === 1) {
+                    // Redirect directly if only one company
+                    window.location.href = `/Home/EditCompanyDetails?companyID=${companies[0].id}`;
+                } else if (companies.length > 1) {
+                    const container = document.getElementById("company-list");
+                    container.innerHTML = "";
+
+                    companies.forEach(company => {
+                        const btn = document.createElement("button");
+                        btn.className = "btn btn-outline-pink w-100 mb-2";
+                        btn.innerText = `${company.companyName} - ${company.branchAddress}`;
+                        btn.onclick = () => {
+                            window.location.href = `/Home/EditCompanyDetails?companyID=${company.id}`;
+                        };
+                        container.appendChild(btn);
+                    });
+
+                    const modal = new bootstrap.Modal(document.getElementById("companySelectModal"));
+                    modal.show();
+                } else {
+                    alert("No companies found for this user.");
+                }
+            })
+            .catch(err => {
+                console.error("Error fetching companies:", err);
+                alert("Failed to load companies.");
+            });
     }
 </script>
 

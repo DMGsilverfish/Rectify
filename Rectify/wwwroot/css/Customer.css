@@ -44,6 +44,14 @@ select.form-control,
     margin-top: 0.25rem; /* matches spacing under labels */
 }
 
+
+/* Properly scope scrolling to custom dropdown class */
+.select2-scrollable .select2-results__options {
+    max-height: 100px !important; /* ~5 items */
+    overflow-y: auto !important;
+}
+
+
 /* Make Select2 look like form-control */
 .select2-container--default .select2-selection--single {
     height: 38px; /* match .form-control */

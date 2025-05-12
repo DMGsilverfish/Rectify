@@ -7,7 +7,7 @@ namespace Rectify.Models.ViewModels
     {
         [Required(ErrorMessage = "Please select a company and branch.")]
         [Display(Name = "Company and Branch")]
-        public string? SelectedUserId { get; set; }
+        public int? SelectedCompanyId { get; set; }
 
         [Required(ErrorMessage = "Full Name is required.")]
         [Display(Name = "Full Name")]

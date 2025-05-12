@@ -11,6 +11,7 @@ namespace Rectify.Data
         public DbSet<CustomerModel> CustomerModel {  get; set; }
         public DbSet<TicketModel> TicketModel { get; set; }
 
+        public DbSet<CompanyModel> CompanyModel { get; set; }
 
     }
 }

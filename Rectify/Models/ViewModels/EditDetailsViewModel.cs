@@ -17,12 +17,6 @@ namespace Rectify.Models.ViewModels
         [Phone]
         public string PhoneNumber { get; set; }
 
-        [Required]
-        public string City { get; set; }
-        [Required]
-        public string BranchAddress { get; set; }
-        [Required]
-        public string CompanyName { get; set; }
 
         [Required]
         public string PreferredContact { get; set; } // "Email" or "WhatsApp"

@@ -144,22 +144,23 @@ namespace Rectify.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult EditCompanyDetails(CompanyDetailsViewModel model, IFormFile? logoFile)
         {
+            ModelState.Remove("Company.User");
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
 
             // Check for duplicate company name AND branch address
-            bool isDuplicate = context.CompanyModel.Any(c =>
-                c.Id != model.Company.Id &&
-                c.CompanyName == model.Company.CompanyName &&
-                c.BranchAddress == model.Company.BranchAddress);
+            //bool isDuplicate = context.CompanyModel.Any(c =>
+            //    c.Id != model.Company.Id &&
+            //    c.CompanyName == model.Company.CompanyName &&
+            //    c.BranchAddress == model.Company.BranchAddress);
 
-            if (isDuplicate)
-            {
-                ModelState.AddModelError("", "A company with the same name and branch address already exists.");
-                return View(model);
-            }
+            //if (isDuplicate)
+            //{
+            //    ModelState.AddModelError("", "A company with the same name and branch address already exists.");
+            //    return View(model);
+            //}
 
             var company = context.CompanyModel.FirstOrDefault(c => c.Id == model.Company.Id);
             if (company == null)

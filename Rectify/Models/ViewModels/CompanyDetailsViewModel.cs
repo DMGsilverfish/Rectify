@@ -1,4 +1,6 @@
-﻿namespace Rectify.Models.ViewModels
+﻿using Microsoft.AspNetCore.Mvc;
+
+namespace Rectify.Models.ViewModels
 {
     public class CompanyDetailsViewModel
     {

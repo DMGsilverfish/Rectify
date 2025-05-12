@@ -15,6 +15,7 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Security.Claims;
+using System.ComponentModel.Design;
 
 
 namespace Rectify.Controllers
@@ -151,16 +152,19 @@ namespace Rectify.Controllers
             }
 
             // Check for duplicate company name AND branch address
-            //bool isDuplicate = context.CompanyModel.Any(c =>
-            //    c.Id != model.Company.Id &&
-            //    c.CompanyName == model.Company.CompanyName &&
-            //    c.BranchAddress == model.Company.BranchAddress);
+            bool isDuplicate = context.CompanyModel
+                .Any(c =>
+                    c.Id != model.Company.Id && // Exclude the current company
+                    c.CompanyName == model.Company.CompanyName &&
+                    c.BranchAddress == model.Company.BranchAddress);
 
-            //if (isDuplicate)
-            //{
-            //    ModelState.AddModelError("", "A company with the same name and branch address already exists.");
-            //    return View(model);
-            //}
+
+
+            if (isDuplicate)
+            {
+                TempData["ErrorMessage"] = "A company with the same name and branch address already exists.";
+                return View(model);
+            }
 
             var company = context.CompanyModel.FirstOrDefault(c => c.Id == model.Company.Id);
             if (company == null)
@@ -326,6 +330,26 @@ namespace Rectify.Controllers
         public IActionResult ThankYou()
         {
             return View();
+        }
+
+        [Authorize]
+        [HttpGet]
+        public IActionResult Reports(int companyID, string userId)
+        {
+
+            var company = context.CompanyModel.FirstOrDefault(c => c.Id == companyID);
+            var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (company == null)
+            {
+                return NotFound();
+            }
+            var viewModel = new CompanyDetailsViewModel
+            {
+                UserId = currentUserId,
+                Company = company
+            };
+
+            return View(viewModel);
         }
 
     }

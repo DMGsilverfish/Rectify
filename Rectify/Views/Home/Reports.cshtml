@@ -1,12 +1,12 @@
-﻿@model ApplicationUser
-
+﻿@model Rectify.Models.ViewModels.CompanyDetailsViewModel
 @{
-    ViewData["Title"] = "Privacy";
+    ViewData["Title"] = "Edit Company Details";
     Layout = "_Layout";
-    var id = Model.Id;
+    var id = Model.UserId;
+    var companyId = Model.Company.Id;
 }
-<head>
 
+<head>
     <style>
 
         .btn-pink {
@@ -81,22 +81,18 @@
                 object-fit: cover;
             }
 
-
-
-
     </style>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
-
 </head>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2 class="mb-0">Your Account Details</h2>
 
     <div class="d-flex gap-2">
-        <a class="btn btn-pink" aria-current="page" href="#">Tickets</a>
-        <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a>
-        <button type="button" class="btn btn-outline-pink" onclick="handleEditCompany('@Model.Id')">Edit Company Details</button>
-        <a class="btn btn-outline-pink" href="@Url.Action("Reports", "Home", new {userId = id})">Report</a>
+        <a class="btn btn-outline-pink" href="@Url.Action("Privacy", "Home")">Tickets</a>
+        <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a> @*user id*@
+        <button type="button" class="btn btn-pink" aria-current="page">Edit Company Details</button>
+        <a class="btn btn-outline-pink" href="@Url.Action("Report", "Account")">Report</a>
         <button class="btn btn-outline-pink" id="qr-btn" data-bs-toggle="modal" data-bs-target="#qrModal"
                 onclick="loadQrCode('@id')">
             <!-- Pass UserId here -->
@@ -106,48 +102,6 @@
 
     </div>
 </div>
-
-
-
-<table class="table table-bordered table-striped mt-3">
-    <tbody>
-        <tr>
-            <th>Full Name</th>
-            <td>@Model.FullName</td>
-        </tr>
-        
-        <tr>
-            <th>Email</th>
-            <td>@Model.Email</td>
-        </tr>
-        <tr>
-            <th>Phone Number</th>
-            <td>@Model.PhoneNumber</td>
-        </tr>
-        
-        <tr>
-            <th>Preferred Contact</th>
-            <td>@Model.PreferredContact</td>
-        </tr>
-        <tr>
-            <th>Reports</th>
-            <td>@(Model.Reports == true ? "Yes" : "No")</td>
-        </tr>
-        <tr>
-            <th>Owner Image</th>
-            <td>
-                @if (Model.OwnerImage != null)
-                {
-                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.OwnerImage)" alt="Owner Image" style="max-height: 150px;" />
-                }
-                else
-                {
-                    <span>No image provided</span>
-                }
-            </td>
-        </tr>
-    </tbody>
-</table>
 
 <!-- QR Code Modal -->
 <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
@@ -182,7 +136,6 @@
         </div>
     </div>
 </div>
-
 
 
 <script>

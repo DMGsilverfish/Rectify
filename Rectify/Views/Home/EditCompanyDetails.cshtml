@@ -1,4 +1,5 @@
-﻿@model Rectify.Models.ViewModels.CompanyDetailsViewModel
+﻿<!--EditCompanyDetails.chtml-->
+@model Rectify.Models.ViewModels.CompanyDetailsViewModel
 @{
     ViewData["Title"] = "Edit Company Details";
     Layout = "_Layout";
@@ -93,11 +94,11 @@
         <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a> @*user id*@
         <button type="button" class="btn btn-pink" aria-current="page">Edit Company Details</button>
         <a class="btn btn-outline-pink" href="@Url.Action("Report", "Account")">Report</a>
-        <button class="btn btn-outline-pink" id="qr-btn" data-bs-toggle="modal" data-bs-target="#qrModal"
-                onclick="loadQrCode('@id')">
-            <!-- Pass UserId here -->
+        <button class="btn btn-outline-pink" id="qr-btn"
+                onclick="handleQrCodeCompanySelect('@id')">
             <i class="bi bi-qr-code"></i> QR Code
         </button>
+
 
 
     </div>
@@ -200,39 +201,40 @@
         }
     }
 
-        function handleQrCodeCompanySelect(userId) {
-        fetch(`/Home/GetUserCompanies?userId=${encodeURIComponent(userId)}`)
-            .then(res => res.json())
-            .then(companies => {
-                if (companies.length === 1) {
-                    loadQrCode(companies[0].id); // Directly load for the only company
-                } else if (companies.length > 1) {
-                    const container = document.getElementById("company-list");
-                    container.innerHTML = "";
+            function handleQrCodeCompanySelect(userId) {
+                fetch(`/Home/GetUserCompanies?userId=${encodeURIComponent(userId)}`)
+                    .then(res => res.json())
+                    .then(companies => {
+                        if (companies.length === 1) {
+                            loadQrCode(companies[0].id); // Directly load for the only company
+                        } else if (companies.length > 1) {
+                            const container = document.getElementById("qr-company-list");
+                            container.innerHTML = "";
 
-                    companies.forEach(company => {
-                        const btn = document.createElement("button");
-                        btn.className = "btn btn-outline-pink w-100 mb-2";
-                        btn.innerText = `${company.companyName} - ${company.branchAddress}`;
-                        btn.onclick = () => {
-                            const modal = bootstrap.Modal.getInstance(document.getElementById("companySelectModal"));
-                            modal.hide();
-                            loadQrCode(company.id);
-                        };
-                        container.appendChild(btn);
+                            companies.forEach(company => {
+                                const btn = document.createElement("button");
+                                btn.className = "btn btn-outline-pink w-100 mb-2";
+                                btn.innerText = `${company.companyName} - ${company.branchAddress}`;
+                                btn.onclick = () => {
+                                    const modal = bootstrap.Modal.getInstance(document.getElementById("qrCompanySelectModal"));
+                                    modal.hide();
+                                    loadQrCode(company.id);
+                                };
+                                container.appendChild(btn);
+                            });
+
+                            const modal = new bootstrap.Modal(document.getElementById("qrCompanySelectModal"));
+                            modal.show();
+                        } else {
+                            alert("No companies found for this user.");
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Error fetching companies:", err);
+                        alert("Failed to load companies.");
                     });
+            }
 
-                    const modal = new bootstrap.Modal(document.getElementById("companySelectModal"));
-                    modal.show();
-                } else {
-                    alert("No companies found for this user.");
-                }
-            })
-            .catch(err => {
-                console.error("Error fetching companies:", err);
-                alert("Failed to load companies.");
-            });
-    }
 
                function loadQrCode(companyId) {
                 const baseUrl = window.location.origin;

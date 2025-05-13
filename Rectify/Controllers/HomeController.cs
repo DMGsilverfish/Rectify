@@ -17,6 +17,10 @@ using System.IO;
 using System.Security.Claims;
 using System.ComponentModel.Design;
 
+using System.Net;
+using System.Net.Mail;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
+
 
 namespace Rectify.Controllers
 {
@@ -324,7 +328,56 @@ namespace Rectify.Controllers
             context.CustomerModel.Add(customer);
             context.SaveChanges();
 
-            return RedirectToAction("ThankYou");
+            //insert email and whatsapp code
+            // Step 1: Get the UserId from the CompanyModel
+            string? userId = context.CompanyModel
+                .Where(c => c.Id == companyId)
+                .Select(c => c.UserId)
+                .FirstOrDefault();
+
+            string? preferredContact = null;
+
+            // Step 2: Use the UserId to fetch PreferredContact from ApplicationUser
+            if (!string.IsNullOrEmpty(userId))
+            {
+                preferredContact = context.Users
+                    .Where(u => u.Id == userId)
+                    .Select(u => u.PreferredContact)
+                    .FirstOrDefault();
+            }
+
+            var company = context.CompanyModel
+                .Include(c => c.User) // Include the related ApplicationUser
+                .FirstOrDefault(c => c.Id == companyId);
+
+            if (preferredContact == "Email")
+            {
+                var subject = $"Customer Query ({company.CompanyName}) - Rectify";
+                var body = $"Name: {model.CustomerName} \n" +
+                           $"Email: {model.Email} \n" +
+                           $"Phone: {model.PhoneNumber} \n" +
+                           $"Message: \n\n{model.Message}";
+
+                try
+                {
+                    SendEmail(company.User.Email, subject, body);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Error sending email: " + ex.Message);
+                    // Optional: Add error feedback to ModelState
+                }
+            }
+            else if (preferredContact == "WhatsApp")
+            {
+
+            } else
+            {
+                //return error
+            }
+
+
+                return RedirectToAction("ThankYou");
         }
 
         public IActionResult ThankYou()
@@ -350,6 +403,97 @@ namespace Rectify.Controllers
             };
 
             return View(viewModel);
+        }
+
+        //[HttpPost]
+        //public IActionResult Emails(string userEmail, string userName, string phone, string userMessage, int companyId)
+        //{
+        //    if (string.IsNullOrEmpty(userEmail) || string.IsNullOrEmpty(userMessage)) {
+        //        ModelState.AddModelError("", "Email and message cannot be empty.");
+        //        return RedirectToAction("Contact", new { companyId = companyId });
+        //    }
+
+        //    var company = context.CompanyModel
+        //        .Include(c => c.User) // Include the related ApplicationUser
+        //        .FirstOrDefault(c => c.Id == companyId);
+
+        //    if (company == null || company.User == null)
+        //    {
+        //        ModelState.AddModelError("", "Company or associated user not found.");
+        //        return RedirectToAction("Contact", new { companyId = companyId });
+        //    }
+
+        //    var companyName = company.CompanyName;
+        //    var companyEmail = company.User.Email;
+
+        //    var subject = $"Customer Query ({companyName})- Rectify";
+        //    var body = $"Name: {userName} \n" +
+        //               $"Email: {userEmail} \n" +
+        //               $"Phone: {phone} \n" +
+        //               $"Message: \n\n{userMessage}";
+            
+        //    try
+        //    {
+        //        if (!string.IsNullOrEmpty(companyEmail))
+        //        {
+        //            SendEmail(companyEmail, subject, body);
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Console.WriteLine("Error sending email: " + ex.Message);
+        //    }
+
+
+        //    return RedirectToAction("Contact", new {companyId = companyId});
+        //}
+
+        private void SendEmail(string toEmail, string subject, string body)
+        {
+            try
+            {
+                var smtpServer = configuration["Gmail:SmtpServer"];
+                var port = int.Parse(configuration["Gmail:Port"]!);
+                var fromEmail = configuration["Gmail:Username"];
+                var password = configuration["Gmail:Password"];
+
+                using (var client = new SmtpClient(smtpServer, port))
+                {
+                    client.EnableSsl = true;
+                    client.Credentials = new NetworkCredential(fromEmail, password);
+
+                    var mailMessage = new MailMessage
+                    {
+                        From = new MailAddress(fromEmail!),
+                        Subject = subject,
+                        Body = body,
+                        IsBodyHtml = false,
+                    };
+                    mailMessage.To.Add(toEmail);
+                    mailMessage.Headers.Add("X-Priority", "3");          // 3 = Normal priority
+                    mailMessage.Headers.Add("X-MSMail-Priority", "Normal");
+                    mailMessage.Headers.Add("Importance", "Normal");
+
+
+
+
+                    client.Send(mailMessage);
+                }
+            }
+            catch (SmtpException ex)
+            {
+                Console.WriteLine("SMTP Error: " + ex.Message);
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine("Inner Exception: " + ex.InnerException.Message);
+                }
+            }
+
+            catch (Exception ex)
+            {
+                // Handle any other exceptions
+                Console.WriteLine("General Error: " + ex.Message);
+            }
         }
 
     }

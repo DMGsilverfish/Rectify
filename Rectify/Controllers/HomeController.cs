@@ -49,9 +49,9 @@ namespace Rectify.Controllers
         }
 
         [Authorize]
-        public IActionResult GenerateQrCode(string userId)
+        public IActionResult GenerateQrCode(string companyId)
         {
-            var url = Url.Action("Contact", "Home", new { userId }, protocol: Request.Scheme);
+            var url = Url.Action("Contact", "Home", new { companyId }, protocol: Request.Scheme);
 
             using var qrGenerator = new QRCodeGenerator();
             using var qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);

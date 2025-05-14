@@ -98,6 +98,13 @@ namespace Rectify.Controllers
         }
 
         [Authorize]
+        public IActionResult PrintQRCode(string companyId)
+        {
+            ViewBag.CompanyID = companyId;
+            return View();
+        }
+
+        [Authorize]
         [HttpGet]
         public IActionResult EditDetails(string userId) //ApplicationUser ID
         {

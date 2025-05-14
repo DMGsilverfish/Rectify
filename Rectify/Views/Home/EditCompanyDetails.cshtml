@@ -171,7 +171,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline-pink" onclick="copyQrLink()">Copy Link</button>
-                <button class="btn btn-outline-pink" onclick="window.print()">Print QR Code</button>
+                <button class="btn btn-outline-pink" onclick="printQrCode('@id')">Print QR Code</button>
             </div>
         </div>
     </div>
@@ -278,6 +278,28 @@
             .catch(err => {
                 console.error("Error fetching companies:", err);
                 alert("Failed to load companies.");
+            });
+    }
+
+    function printQrCode(userId) {
+        fetch(`/Home/GetUserCompanies?userId=${userId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.length > 0) {
+                    const companyId = data[0].id;
+                    const iframe = document.createElement('iframe');
+                    iframe.style.display = 'none';
+                    iframe.src = `/Home/PrintQRCode?companyId=${companyId}`;
+                    document.body.appendChild(iframe);
+                    iframe.onload = function () {
+                        setTimeout(() => document.body.removeChild(iframe), 3000);
+                    };
+                } else {
+                    alert("No company found for this user.");
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching company:", error);
             });
     }
 </script>

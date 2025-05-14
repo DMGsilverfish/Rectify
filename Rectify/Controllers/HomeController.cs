@@ -49,7 +49,38 @@ namespace Rectify.Controllers
         public async Task<IActionResult> Privacy()
         {
             var user = await userManager.GetUserAsync(User);
-            return View(user);
+
+            // Get all company IDs linked to the user (assumes such a relationship)
+            var companies = await context.CompanyModel
+                .Where(c => c.UserId == user.Id)
+                .ToListAsync();
+
+            var companyIds = companies.Select(c => c.Id).ToList();
+            bool showCompanyInfo = companies.Count > 1;
+
+            // Join Tickets and Customers
+            var ticketData = await (from t in context.TicketModel
+                                    join c in context.CustomerModel on t.TicketID equals c.TicketID
+                                    join comp in context.CompanyModel on t.CompanyID equals comp.Id
+                                    where companyIds.Contains(t.CompanyID)
+                                    select new TicketDisplayModel
+                                    {
+                                        TicketID = t.TicketID,
+                                        CompanyName = comp.CompanyName,
+                                        BranchAddress = comp.BranchAddress,
+                                        DateOfMessage = t.DateOfMessage,
+                                        Status = t.Status,
+                                        Message = c.Message
+                                    }).ToListAsync();
+
+            var viewModel = new TicketingViewModel
+            {
+                User = user,
+                Tickets = ticketData,
+                ShowCompanyInfo = showCompanyInfo
+            };
+
+            return View(viewModel);
         }
 
         [Authorize]

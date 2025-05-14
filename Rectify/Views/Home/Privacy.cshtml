@@ -1,9 +1,10 @@
-﻿@model ApplicationUser
+﻿@using Rectify.Models.ViewModels
+@model TicketingViewModel
 
 @{
     ViewData["Title"] = "Privacy";
     Layout = "_Layout";
-    var id = Model.Id;
+    var id = Model.User.Id;
 }
 <head>
 
@@ -90,61 +91,54 @@
 </head>
 
 <div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">Your Account Details</h2>
+    <h2 class="mb-0">Your Tickets</h2>
 
     <div class="d-flex gap-2">
         <a class="btn btn-pink" aria-current="page" href="#">Tickets</a>
         <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a>
-        <button type="button" class="btn btn-outline-pink" onclick="handleEditCompany('@Model.Id')">Edit Company Details</button>
+        <button type="button" class="btn btn-outline-pink" onclick="handleEditCompany('@Model.User.Id')">Edit Company Details</button>
         <a class="btn btn-outline-pink" href="@Url.Action("Reports", "Home", new {userId = id})">Report</a>
         <button class="btn btn-outline-pink" id="qr-btn" data-bs-toggle="modal"
-                onclick="handleQrCodeCompanySelect('@Model.Id')">
+                onclick="handleQrCodeCompanySelect('@Model.User.Id')">
             <i class="bi bi-qr-code"></i> QR Code
         </button>
     </div>
 </div>
 
 
-
 <table class="table table-bordered table-striped mt-3">
+    <thead>
+        <tr>
+            <th>Ticket ID</th>
+            @if (Model.ShowCompanyInfo)
+            {
+                <th>Company</th>
+                <th>Branch Address</th>
+            }
+            <th>Date of Message</th>
+            <th>Status</th>
+            <th>Message</th>
+        </tr>
+    </thead>
     <tbody>
-        <tr>
-            <th>Full Name</th>
-            <td>@Model.FullName</td>
-        </tr>
-        
-        <tr>
-            <th>Email</th>
-            <td>@Model.Email</td>
-        </tr>
-        <tr>
-            <th>Phone Number</th>
-            <td>@Model.PhoneNumber</td>
-        </tr>
-        
-        <tr>
-            <th>Preferred Contact</th>
-            <td>@Model.PreferredContact</td>
-        </tr>
-        <tr>
-            <th>Reports</th>
-            <td>@(Model.Reports == true ? "Yes" : "No")</td>
-        </tr>
-        <tr>
-            <th>Owner Image</th>
-            <td>
-                @if (Model.OwnerImage != null)
+        @foreach (var ticket in Model.Tickets)
+        {
+            <tr>
+                <td>@ticket.TicketID</td>
+                @if (Model.ShowCompanyInfo)
                 {
-                    <img src="data:image/jpeg;base64,@Convert.ToBase64String(Model.OwnerImage)" alt="Owner Image" style="max-height: 150px;" />
+                    <td>@ticket.CompanyName</td>
+                    <td>@ticket.BranchAddress</td>
                 }
-                else
-                {
-                    <span>No image provided</span>
-                }
-            </td>
-        </tr>
+                <td>@ticket.DateOfMessage.ToString("yyyy-MM-dd")</td>
+                <td>@ticket.Status</td>
+                <td>@ticket.Message</td>
+            </tr>
+        }
     </tbody>
 </table>
+
+
 
 <!-- QR Code Modal -->
 <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">

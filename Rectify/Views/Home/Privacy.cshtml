@@ -105,6 +105,26 @@
     </div>
 </div>
 
+<div class="mb-3 d-flex gap-2 flex-wrap align-items-end">
+    <div>
+        <label for="startDate" class="form-label">Start Date</label>
+        <input type="date" id="startDate" class="form-control" />
+    </div>
+    <div>
+        <label for="endDate" class="form-label">End Date</label>
+        <input type="date" id="endDate" class="form-control" />
+    </div>
+    <div>
+        <label for="sortOrder" class="form-label">Sort By Date</label>
+        <select id="sortOrder" class="form-select">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+        </select>
+    </div>
+    <div>
+        <button class="btn btn-outline-pink" onclick="applyTicketFilters()">Filter</button>
+    </div>
+</div>
 
 <table class="table table-bordered table-striped mt-3">
     <thead>
@@ -120,7 +140,7 @@
             <th>Message</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody id="ticketTableBody">
         @foreach (var ticket in Model.Tickets)
         {
             <tr>
@@ -304,5 +324,37 @@
             document.getElementById("printQrBtn").addEventListener("click", printQrCode);
 
 
+    function applyTicketFilters() {
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+        const sortOrder = document.getElementById("sortOrder").value;
+
+        fetch(`/Home/FilterTickets?startDate=${startDate}&endDate=${endDate}&sortOrder=${sortOrder}`)
+
+            .then(res => res.json())
+            .then(data => {
+                const tbody = document.getElementById("ticketTableBody");
+                tbody.innerHTML = "";
+
+                data.forEach(ticket => {
+                    const row = document.createElement("tr");
+
+                    row.innerHTML += `<td>${ticket.ticketID}</td>`;
+                    if (@Model.ShowCompanyInfo.ToString().ToLower()) {
+                        row.innerHTML += `<td>${ticket.companyName}</td>`;
+                        row.innerHTML += `<td>${ticket.branchAddress}</td>`;
+                    }
+                    row.innerHTML += `<td>${ticket.dateOfMessage.split('T')[0]}</td>`;
+                    row.innerHTML += `<td>${ticket.status}</td>`;
+                    row.innerHTML += `<td>${ticket.message}</td>`;
+
+                    tbody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error("Error filtering tickets:", error);
+                alert("Failed to filter tickets.");
+            });
+    }
 
 </script>

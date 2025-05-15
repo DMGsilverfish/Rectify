@@ -84,6 +84,50 @@ namespace Rectify.Controllers
         }
 
         [Authorize]
+        public async Task<IActionResult> FilterTickets(DateTime? startDate, DateTime? endDate, string sortOrder = "desc")
+        {
+            var user = await userManager.GetUserAsync(User);
+
+            var companies = await context.CompanyModel
+                .Where(c => c.UserId == user.Id)
+                .ToListAsync();
+
+            var companyIds = companies.Select(c => c.Id).ToList();
+
+            var ticketsQuery = from t in context.TicketModel
+                               join c in context.CustomerModel on t.TicketID equals c.TicketID
+                               join comp in context.CompanyModel on t.CompanyID equals comp.Id
+                               where companyIds.Contains(t.CompanyID)
+                               select new
+                               {
+                                   t.TicketID,
+                                   comp.CompanyName,
+                                   comp.BranchAddress,
+                                   t.DateOfMessage,
+                                   t.Status,
+                                   c.Message
+                               };
+
+            if (startDate.HasValue)
+                ticketsQuery = ticketsQuery.Where(t => t.DateOfMessage >= startDate.Value);
+
+            if (endDate.HasValue)
+                ticketsQuery = ticketsQuery.Where(t => t.DateOfMessage <= endDate.Value);
+
+            ticketsQuery = sortOrder == "asc"
+                ? ticketsQuery.OrderBy(t => t.DateOfMessage)
+                : ticketsQuery.OrderByDescending(t => t.DateOfMessage);
+
+            var filteredTickets = await ticketsQuery.ToListAsync();
+
+            return Json(filteredTickets);
+        }
+
+
+
+
+
+        [Authorize]
         public IActionResult GenerateQrCode(string companyId)
         {
             var url = Url.Action("Contact", "Home", new { companyId }, protocol: Request.Scheme);

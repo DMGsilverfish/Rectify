@@ -122,10 +122,33 @@ namespace Rectify.Controllers
 
             return Json(filteredTickets);
         }
+        [Authorize]
+        [HttpPost]
+        public IActionResult UpdateStatus(string ticketId, string status)
+        {
+            var ticket = context.TicketModel.FirstOrDefault(t => t.TicketID == ticketId);
+            if (ticket == null)
+            {
+                TempData["ErrorMessage"] = $"Ticket {ticketId} was not found.";
+                return RedirectToAction("Privacy");
+            }
 
 
+            if (ticket.Status != status)
+            {
+                ticket.Status = status;
+                ticket.DateLastUpdated = DateTime.Now;
 
+                context.SaveChanges();
+                TempData["SuccessMessage"] = $"Status for Ticket {ticketId} updated successfully.";
+            }
+            else
+            {
+                TempData["WarningMessage"] = $"No changes made. Ticket {ticketId} is already marked as '{status}'.";
+            }
 
+            return RedirectToAction("Privacy");
+        }
 
         [Authorize]
         public IActionResult GenerateQrCode(string companyId)
@@ -487,48 +510,6 @@ namespace Rectify.Controllers
             return View(viewModel);
         }
 
-        //[HttpPost]
-        //public IActionResult Emails(string userEmail, string userName, string phone, string userMessage, int companyId)
-        //{
-        //    if (string.IsNullOrEmpty(userEmail) || string.IsNullOrEmpty(userMessage)) {
-        //        ModelState.AddModelError("", "Email and message cannot be empty.");
-        //        return RedirectToAction("Contact", new { companyId = companyId });
-        //    }
-
-        //    var company = context.CompanyModel
-        //        .Include(c => c.User) // Include the related ApplicationUser
-        //        .FirstOrDefault(c => c.Id == companyId);
-
-        //    if (company == null || company.User == null)
-        //    {
-        //        ModelState.AddModelError("", "Company or associated user not found.");
-        //        return RedirectToAction("Contact", new { companyId = companyId });
-        //    }
-
-        //    var companyName = company.CompanyName;
-        //    var companyEmail = company.User.Email;
-
-        //    var subject = $"Customer Query ({companyName})- Rectify";
-        //    var body = $"Name: {userName} \n" +
-        //               $"Email: {userEmail} \n" +
-        //               $"Phone: {phone} \n" +
-        //               $"Message: \n\n{userMessage}";
-            
-        //    try
-        //    {
-        //        if (!string.IsNullOrEmpty(companyEmail))
-        //        {
-        //            SendEmail(companyEmail, subject, body);
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Console.WriteLine("Error sending email: " + ex.Message);
-        //    }
-
-
-        //    return RedirectToAction("Contact", new {companyId = companyId});
-        //}
 
         private void SendEmail(string toEmail, string subject, string body)
         {

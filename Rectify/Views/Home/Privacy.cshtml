@@ -237,7 +237,7 @@
             });
     }
 
-                let currentCompanyId = null;
+            let currentCompanyId = null;
 
                 function loadQrCode(companyId) {
                     currentCompanyId = companyId;  // store the selected company id
@@ -286,7 +286,7 @@
             });
     }
 
-            function printQrCode() {
+      function printQrCode() {
                 if (!currentCompanyId) {
                     alert("No company selected for printing.");
                     return;
@@ -302,6 +302,7 @@
             }
 
             document.getElementById("printQrBtn").addEventListener("click", printQrCode);
+
 
 
 </script>

@@ -7,74 +7,51 @@
 <head>
     <meta charset="utf-8" />
     <title>Print QR Code</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 2rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .card {
-            border: 2px solid #ddd;
-            padding: 2rem;
-            max-width: 700px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 2rem;
-        }
-
-        .text {
-            flex: 2;
-        }
-
-        .qr {
-            flex: 1;
-        }
-
-        h1 {
-            color: #333;
-            font-size: 1.8rem;
-        }
-
-        .green-check {
-            color: green;
-            font-weight: bold;
-            margin-right: 0.5rem;
-        }
-
-        .orange {
-            color: #e3621c;
-            font-weight: bold;
-        }
-
-        .bold {
-            font-weight: bold;
-        }
-    </style>
+    <link href="~/css/print.css" rel="stylesheet" media="print" />
 </head>
 <body onload="window.print()">
-    <div class="card">
-        <div class="text">
-            <h1><span class="green-check">✔</span>THIS IS RECTIFY.</h1>
-            <p class="orange">You talk. We fix. We grow – together.</p>
-            <p class="bold">DIRECT COMMS – FOR BETTER BUSINESS</p>
+    <div class="full-line">
+        <h1><span class="green-check">✔</span>THIS IS RECTIFY.</h1>
+    </div>
 
-            <p class="bold" style="font-size: 1.2rem; margin-top: 1rem;">Something went wrong?</p>
-            <p>Scan the QR code and message directly to the owner.</p>
-            <p>No call centers.<br>No waiting.<br>No BS.</p>
+    <div class="full-line">
+        <p class="orange">You talk. We fix. We grow – together.</p>
+    </div>
 
-            <p class="orange">TAP IN. BE HEARD.<br>LET’S MAKE IT RIGHT.</p>
+    <div class="full-line">
+        <p class="bold">DIRECT COMMS – FOR BETTER BUSINESS</p>
+    </div>
 
-            <p class="bold" style="margin-top: 1rem;">Be part of a better business model!</p>
-            <p><span class="orange">POWERED BY</span> <span class="bold orange">RECTIFY</span></p>
+    <div class="full-line">
+        <p class="bold">Something went wrong?</p>
+    </div>
+
+    <div class="two-line-message">
+        <p>Scan the QR code and message</p>
+        <p>directly to the owner.</p>
+    </div>
+
+    <!-- Two-column layout starts here -->
+    <div class="two-column-section">
+        <div class="left-column">
+            <p>No call centers.</p>
+            <p>No waiting.</p>
+            <p>No BS.</p>
+            <p class="orange">TAP IN. BE HEARD.</p>
+            <p class="orange">LET’S MAKE IT RIGHT.</p>
         </div>
-        <div class="qr">
-            <img src="/Home/GenerateQrCode?companyId=@companyId" alt="QR Code" style="width: 200px; height: 200px;" />
+        <div class="right-column">
+            <img src="/Home/GenerateQrCode?companyId=@companyId" alt="QR Code" />
         </div>
+    </div>
+
+    <!-- Back to full-width -->
+    <div class="full-line">
+        <p class="bold">Be part of a better business model!</p>
+    </div>
+
+    <div class="full-line">
+        <p><span class="orange">POWERED BY</span> <span class="bold orange">RECTIFY</span></p>
     </div>
 </body>
 </html>

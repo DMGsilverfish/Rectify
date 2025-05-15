@@ -171,7 +171,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline-pink" onclick="copyQrLink()">Copy Link</button>
-                <button class="btn btn-outline-pink" onclick="printQrCode('@id')">Print QR Code</button>
+                <button class="btn btn-outline-pink" id="printQrBtn">Print QR Code</button>
             </div>
         </div>
     </div>
@@ -236,16 +236,19 @@
             }
 
 
-               function loadQrCode(companyId) {
-                const baseUrl = window.location.origin;
-                qrEncodedUrl = `${baseUrl}/Home/Contact?companyId=${encodeURIComponent(companyId)}`;
+               let currentCompanyId = null;
 
-                const img = document.getElementById("qrCodeImage");
-                img.src = `/Home/GenerateQrCode?companyId=${encodeURIComponent(companyId)}&t=${Date.now()}`;
+                function loadQrCode(companyId) {
+                    currentCompanyId = companyId;  // store the selected company id
+                    const baseUrl = window.location.origin;
+                    qrEncodedUrl = `${baseUrl}/Home/Contact?companyId=${encodeURIComponent(companyId)}`;
 
-                const qrModal = new bootstrap.Modal(document.getElementById("qrModal"));
-                qrModal.show();
-            }
+                    const img = document.getElementById("qrCodeImage");
+                    img.src = `/Home/GenerateQrCode?companyId=${encodeURIComponent(companyId)}&t=${Date.now()}`;
+
+                    const qrModal = new bootstrap.Modal(document.getElementById("qrModal"));
+                    qrModal.show();
+                }
 
 
         function handleEditCompany(userId) {
@@ -281,25 +284,20 @@
             });
     }
 
-    function printQrCode(userId) {
-        fetch(`/Home/GetUserCompanies?userId=${userId}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.length > 0) {
-                    const companyId = data[0].id;
+    function printQrCode() {
+                    if (!currentCompanyId) {
+                        alert("No company selected for printing.");
+                        return;
+                    }
+
                     const iframe = document.createElement('iframe');
                     iframe.style.display = 'none';
-                    iframe.src = `/Home/PrintQRCode?companyId=${companyId}`;
+                    iframe.src = `/Home/PrintQRCode?companyId=${encodeURIComponent(currentCompanyId)}`;
                     document.body.appendChild(iframe);
                     iframe.onload = function () {
                         setTimeout(() => document.body.removeChild(iframe), 3000);
                     };
-                } else {
-                    alert("No company found for this user.");
                 }
-            })
-            .catch(error => {
-                console.error("Error fetching company:", error);
-            });
-    }
+
+                document.getElementById("printQrBtn").addEventListener("click", printQrCode);
 </script>

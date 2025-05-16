@@ -105,27 +105,6 @@
     </div>
 </div>
 
-<div class="mb-3 d-flex gap-2 flex-wrap align-items-end">
-    <div>
-        <label for="startDate" class="form-label">Start Date</label>
-        <input type="date" id="startDate" class="form-control" />
-    </div>
-    <div>
-        <label for="endDate" class="form-label">End Date</label>
-        <input type="date" id="endDate" class="form-control" />
-    </div>
-    <div>
-        <label for="sortOrder" class="form-label">Sort By Date</label>
-        <select id="sortOrder" class="form-select">
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-        </select>
-    </div>
-    <div>
-        <button class="btn btn-outline-pink" onclick="applyTicketFilters()">Filter</button>
-    </div>
-</div>
-
 @* Success Message *@
 @if (TempData["SuccessMessage"] != null)
 {
@@ -153,47 +132,67 @@
     </div>
 }
 
+<div class="container">
+    <div class="row mb-3">
+        <div class="col-md-3">
+            <label>Start Date:</label>
+            <input type="date" id="startDate" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>End Date:</label>
+            <input type="date" id="endDate" class="form-control" />
+        </div>
+        <div class="col-md-3">
+            <label>Sort by:</label>
+            <select id="sortOrder" class="form-control">
+                <option value="asc">Oldest First</option>
+                <option value="desc">Newest First</option>
+            </select>
+        </div>
+        <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-primary w-100" onclick="applyTicketFilters()">Filter</button>
+        </div>
+    </div>
 
-
-<table class="table table-bordered table-striped mt-3">
-    <thead>
-        <tr>
-            <th>Ticket ID</th>
-            @if (Model.ShowCompanyInfo)
-            {
-                <th>Company</th>
-                <th>Branch Address</th>
-            }
-            <th>Date of Message</th>
-            <th>Status</th>
-            <th>Message</th>
-            <th>Edit</th>
-        </tr>
-    </thead>
-    <tbody id="ticketTableBody">
-        @foreach (var ticket in Model.Tickets)
-        {
+    <table class="table table-bordered">
+        <thead>
             <tr>
-                <td>@ticket.TicketID</td>
+                <th>Ticket ID</th>
                 @if (Model.ShowCompanyInfo)
                 {
-                    <td>@ticket.CompanyName</td>
-                    <td>@ticket.BranchAddress</td>
+                    <th>Company</th>
+                    <th>Branch/Address</th>
                 }
-                <td>@ticket.DateOfMessage.ToString("yyyy-MM-dd")</td>
-                <td>@ticket.Status</td>
-                <td>@ticket.Message</td>
-                <td>
-                    <button class="btn btn-outline-pink btn-sm"
-                            onclick="openStatusModal('@ticket.TicketID', '@ticket.Status')">
-                        Edit
-                    </button>
-                </td>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Message</th>
+                <th>Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
-
+        </thead>
+        <tbody id="ticketTableBody">
+            @foreach (var ticket in Model.Tickets)
+            {
+                <tr>
+                    <td>@ticket.TicketID</td>
+                    @if (Model.ShowCompanyInfo)
+                    {
+                        <td>@ticket.CompanyName</td>
+                        <td>@ticket.BranchAddress</td>
+                    }
+                    <td>@ticket.DateOfMessage.ToShortDateString()</td>
+                    <td>@ticket.Status</td>
+                    <td>@ticket.Message</td>
+                    <td>
+                        <button class="btn btn-outline-pink btn-sm"
+                                onclick="openStatusModal('@ticket.TicketID', '@ticket.Status')">
+                            Edit
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
 
 
 <!-- QR Code Modal -->
@@ -387,38 +386,45 @@
             document.getElementById("printQrBtn").addEventListener("click", printQrCode);
 
 
-    function applyTicketFilters() {
-        const startDate = document.getElementById("startDate").value;
-        const endDate = document.getElementById("endDate").value;
-        const sortOrder = document.getElementById("sortOrder").value;
+            function applyTicketFilters() {
+                const startDate = document.getElementById("startDate").value;
+                const endDate = document.getElementById("endDate").value;
+                const sortOrder = document.getElementById("sortOrder").value;
 
-        fetch(`/Home/FilterTickets?startDate=${startDate}&endDate=${endDate}&sortOrder=${sortOrder}`)
+                const showCompanyInfo = @Model.ShowCompanyInfo.ToString().ToLower(); // true/false
 
-            .then(res => res.json())
-            .then(data => {
-                const tbody = document.getElementById("ticketTableBody");
-                tbody.innerHTML = "";
+                fetch(`/Home/FilterTickets?startDate=${startDate}&endDate=${endDate}&sortOrder=${sortOrder}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const tbody = document.getElementById("ticketTableBody");
+                        tbody.innerHTML = ""; // Clear table
 
-                data.forEach(ticket => {
-                    const row = document.createElement("tr");
+                        data.forEach(ticket => {
+                            const row = document.createElement("tr");
 
-                    row.innerHTML += `<td>${ticket.ticketID}</td>`;
-                    if (@Model.ShowCompanyInfo.ToString().ToLower()) {
-                        row.innerHTML += `<td>${ticket.companyName}</td>`;
-                        row.innerHTML += `<td>${ticket.branchAddress}</td>`;
-                    }
-                    row.innerHTML += `<td>${ticket.dateOfMessage.split('T')[0]}</td>`;
-                    row.innerHTML += `<td>${ticket.status}</td>`;
-                    row.innerHTML += `<td>${ticket.message}</td>`;
+                            const dateOnly = new Date(ticket.dateOfMessage).toLocaleDateString(); // Short date
 
-                    tbody.appendChild(row);
-                });
-            })
-            .catch(error => {
-                console.error("Error filtering tickets:", error);
-                alert("Failed to filter tickets.");
-            });
-    }
+                            row.innerHTML = `
+                                <td>${ticket.ticketID}</td>
+                                ${showCompanyInfo ? `<td>${ticket.companyName || ''}</td><td>${ticket.branchAddress || ''}</td>` : ''}
+                                <td>${dateOnly}</td>
+                                <td>${ticket.status}</td>
+                                <td>${ticket.message}</td>
+                                <td>
+                                    <button class="btn btn-outline-pink btn-sm"
+                                            onclick="openStatusModal('${ticket.ticketID}', '${ticket.status}')">
+                                        Edit
+                                    </button>
+                                </td>
+                            `;
+
+                            tbody.appendChild(row);
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error filtering tickets:", error);
+                    });
+            }
 
 
     //status changing area

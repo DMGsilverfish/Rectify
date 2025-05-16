@@ -264,7 +264,7 @@ namespace Rectify.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CompanyModel");
+                    b.ToTable("CompanyModel", (string)null);
                 });
 
             modelBuilder.Entity("Rectify.Models.CustomerModel", b =>
@@ -297,7 +297,7 @@ namespace Rectify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CustomerModel");
+                    b.ToTable("CustomerModel", (string)null);
                 });
 
             modelBuilder.Entity("Rectify.Models.TicketModel", b =>
@@ -320,7 +320,7 @@ namespace Rectify.Migrations
 
                     b.HasKey("TicketID");
 
-                    b.ToTable("TicketModel");
+                    b.ToTable("TicketModel", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

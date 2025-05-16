@@ -71,7 +71,7 @@ namespace Rectify.Controllers
             if (!TempData.ContainsKey("RegisterData"))
                 return RedirectToAction("Register");
 
-            var model = JsonSerializer.Deserialize<CompanyRegisterViewModel>((string)TempData["RegisterData"]);
+            var model = JsonSerializer.Deserialize<CompanyRegisterViewModel>((string)TempData["RegisterData"]!);
             TempData.Keep("RegisterData");
             return View(model);
         }
@@ -81,7 +81,7 @@ namespace Rectify.Controllers
             if (!TempData.ContainsKey("RegisterData"))
                 return RedirectToAction("Register");
 
-            var step1Data = JsonSerializer.Deserialize<CompanyRegisterViewModel>((string)TempData["RegisterData"]);
+            var step1Data = JsonSerializer.Deserialize<CompanyRegisterViewModel>((string)TempData["RegisterData"]!);
 
             // Copy step 1 data back into final model
             model.Name = step1Data!.Name;
@@ -113,19 +113,19 @@ namespace Rectify.Controllers
             {
                 UserName = model.Email,
                 Email = model.Email,
-                FullName = model.Name,
+                FullName = model.Name!,
                 PhoneNumber = model.PhoneNumber,
                 PreferredContact = model.PrefferedContact,
                 Reports = model.Reports
                 
             };
-            var result = await userManager.CreateAsync(user, model.Password);
+            var result = await userManager.CreateAsync(user, model.Password!);
 
             var company = new CompanyModel
             {
-                CompanyName = model.CompanyName,
-                City = model.City,
-                BranchAddress = model.BranchAddress,
+                CompanyName = model.CompanyName!,
+                City = model.City!,
+                BranchAddress = model.BranchAddress!,
                 UserId = user.Id,
             };
 

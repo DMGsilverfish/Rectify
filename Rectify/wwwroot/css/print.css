@@ -35,7 +35,13 @@ h1 {
 
 
 .orange {
-    color: #e3621c;
+    color: #d6007c;
+    font-weight: bold;
+    font-size: 2rem;
+}
+
+.pink {
+    color: #d6007c !important;
     font-weight: bold;
     font-size: 2rem;
 }

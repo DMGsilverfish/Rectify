@@ -7,7 +7,8 @@
 <head>
     <meta charset="utf-8" />
     <title>Print QR Code</title>
-    <link href="~/css/print.css" rel="stylesheet" media="print" />
+    <link href="~/css/print.css" rel="stylesheet" media="print" asp-append-version="true"/>
+    
 </head>
 <body onload="window.print()">
     <div class="full-line">
@@ -15,7 +16,7 @@
     </div>
 
     <div class="full-line">
-        <p class="orange">You talk. We fix. We grow – together.</p>
+        <p class="pink">You talk. We fix. We grow – together.</p>
     </div>
 
     <div class="full-line">
@@ -37,8 +38,8 @@
             <p>No call centers.</p>
             <p>No waiting.</p>
             <p>No BS.</p>
-            <p class="orange">TAP IN. BE HEARD.</p>
-            <p class="orange">LET’S MAKE IT RIGHT.</p>
+            <p class="pink">TAP IN. BE HEARD.</p>
+            <p class="pink">LET’S MAKE IT RIGHT.</p>
         </div>
         <div class="right-column">
             <img src="/Home/GenerateQrCode?companyId=@companyId" alt="QR Code" />
@@ -51,7 +52,7 @@
     </div>
 
     <div class="full-line">
-        <p><span class="orange">POWERED BY</span> <span class="bold orange">RECTIFY</span></p>
+        <p><span class="pink">POWERED BY</span> <span class="bold orange">RECTIFY</span></p>
     </div>
 </body>
 </html>

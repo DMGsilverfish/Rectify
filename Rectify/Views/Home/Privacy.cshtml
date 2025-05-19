@@ -7,7 +7,7 @@
     var id = Model.User.Id;
 }
 <head>
-
+    <link href="~/css/mobile.css" rel="stylesheet" asp-append-version="true" />
     <style>
 
         .btn-pink {
@@ -84,16 +84,17 @@
 
 
 
-
     </style>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 </head>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">Your Tickets</h2>
+<div id="ticketHeader" class="d-flex flex-wrap justify-content-between align-items-center mb-3">
+    <div id="ticketHeading">
+        <h2 class="mb-2 mb-md-0">Your Tickets</h2>
+    </div>
 
-    <div class="d-flex gap-2">
+    <div id="ticketButtons" class="d-flex flex-wrap gap-2 justify-content-end">
         <a class="btn btn-pink" aria-current="page" href="#">Tickets</a>
         <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a>
         <button type="button" class="btn btn-outline-pink" onclick="handleEditCompany('@Model.User.Id')">Edit Company Details</button>
@@ -104,6 +105,7 @@
         </button>
     </div>
 </div>
+
 
 @* Success Message *@
 @if (TempData["SuccessMessage"] != null)
@@ -163,7 +165,7 @@
                     <th>Company</th>
                     <th>Branch/Address</th>
                 }
-                <th>Date</th>
+                <th class="d-none d-md-table-cell">Date</th>
                 <th>Status</th>
                 <th>Message</th>
                 <th>Actions</th>
@@ -179,7 +181,7 @@
                         <td>@ticket.CompanyName</td>
                         <td>@ticket.BranchAddress</td>
                     }
-                    <td>@ticket.DateOfMessage.ToShortDateString()</td>
+                    <td class="d-none d-md-table-cell">@ticket.DateOfMessage.ToShortDateString()</td>
                     <td>@ticket.Status</td>
                     <td>@ticket.Message</td>
                     <td>
@@ -192,6 +194,7 @@
             }
         </tbody>
     </table>
+
 </div>
 
 
@@ -453,7 +456,16 @@
                 bsAlert.close();
             });
         }, 5000);
-     
+    
+        
+        
+    //mobile support
+    window.addEventListener('DOMContentLoaded', function () {
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            document.getElementById('ticketHeader')?.classList.add('mobile-stack');
+        }
+    });
 
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

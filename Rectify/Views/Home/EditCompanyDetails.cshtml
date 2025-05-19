@@ -8,6 +8,7 @@
 }
 
 <head>
+    <link href="~/css/mobile.css" rel="stylesheet" asp-append-version="true" />
     <style>
 
         .btn-pink {
@@ -86,10 +87,12 @@
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 </head>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">Your Account Details</h2>
+<div id="ticketHeader" class="d-flex justify-content-between align-items-center mb-3">
+    <div id="ticketHeading">
+        <h2 class="mb-2 mb-md-0">Your Tickets</h2>
+    </div>
 
-    <div class="d-flex gap-2">
+    <div id="ticketButtons" class="d-flex flex-wrap gap-2 justify-content-end">
         <a class="btn btn-outline-pink" href="@Url.Action("Privacy", "Home")">Tickets</a>
         <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a> @*user id*@
         <button type="button" class="btn btn-pink" aria-current="page">Edit Company Details</button>
@@ -300,4 +303,12 @@
                 }
 
                 document.getElementById("printQrBtn").addEventListener("click", printQrCode);
+
+    //mobile support
+    window.addEventListener('DOMContentLoaded', function () {
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            document.getElementById('ticketHeader')?.classList.add('mobile-stack');
+        }
+    })
 </script>

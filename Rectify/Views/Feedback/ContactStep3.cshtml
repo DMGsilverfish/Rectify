@@ -1,0 +1,38 @@
+﻿@using Rectify.Models.ViewModels;
+@model CustomerFeedbackViewModel
+
+@{
+    ViewData["Title"] = "Contact";
+    Layout = "_Layout";
+}
+<head>
+    <link rel="stylesheet" href="~/css/Customer.css" asp-append-version="true" />
+
+</head>
+
+
+<div class="container">
+    <div class="box">
+        <h2>We will try Rectify this issue</h2>
+        <h2>Do you want to hear back?</h2>
+        <form asp-action="ContactStep3" method="post">
+            <div class="form-group">
+                <label asp-for="Email">Email: (optional)</label>
+                <input asp-for="Email" class="form-control" autocomplete="email"/>
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="PhoneNumber">Phone Number: (optional)</label>
+                <input asp-for="PhoneNumber" class="form-control" autocomplete="tel"/>
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-pink" style="margin-top: 20px; display: block; margin-left: auto; margin-right: auto;">Submit Feedback</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

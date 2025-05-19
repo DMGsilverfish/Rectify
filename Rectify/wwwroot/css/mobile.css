@@ -1,0 +1,21 @@
+﻿@media (max-width: 768px) {
+    #ticketHeader {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+    }
+
+    #ticketButtons {
+        justify-content: start !important;
+        flex-direction: column;
+        width: 100%;
+    }
+
+        #ticketButtons .btn {
+            width: 100%;
+            font-size: 0.95rem;
+        }
+
+    #ticketHeading h2 {
+        font-size: 1.25rem;
+    }
+}

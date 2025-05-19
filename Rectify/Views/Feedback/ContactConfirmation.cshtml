@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Feedback Submitted";
+    string? ticketID = ViewBag.TicketID as string;
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@if (!string.IsNullOrEmpty(ticketID))
+{
+        <p>Thank you for your feedback! Your ticket ID is:</p>
+        <div class="alert alert-success">
+            <strong>@ticketID</strong>
+        </div>
+}
+else
+{
+        <p>Something went wrong. Please try again.</p>
+}

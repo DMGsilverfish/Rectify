@@ -12,7 +12,8 @@
 
 <div class="container">
     <div class="box">
-        <h2>Message:</h2>
+        <h2>Time to Rectify your experience!</h2>
+        <h2>Tell us what happened</h2>
         <form asp-action="ContactStep1" method="post">
 
             <div style="display: flex; gap: 20px; align-items: center;">
@@ -27,7 +28,7 @@
 
             <div class="form-group">
                 <label asp-for="SelectedCompanyId">Select Company:</label>
-                <select asp-for="SelectedCompanyId" asp-items="Model.CompanyBranchOptions" class="form-control select2" id="companyBranchSelect">
+                <select asp-for="SelectedCompanyId" asp-items="Model.CompanyBranchOptions" class="form-control select2" id="companyBranchSelect" required>
                     <option value="">-- Select Company and Branch --</option>
                 </select>
                 <span asp-validation-for="SelectedCompanyId" class="text-danger"></span>
@@ -35,7 +36,7 @@
 
             <div class="form-group">
                 <label asp-for="Message">Message:</label>
-                <textarea asp-for="Message" class="form-control"></textarea>
+                <textarea asp-for="Message" class="form-control" required></textarea>
                 <span asp-validation-for="Message" class="text-danger"></span>
             </div>
 

@@ -2,6 +2,7 @@
 
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using Rectify.Data;
 using Rectify.Models;
 using Rectify.Models.ViewModels;
@@ -21,18 +22,44 @@ public class FeedbackController : Controller
     public IActionResult ContactStep1(int? companyId)
     {
         //https://localhost:7192/Feedback/ContactStep1?companyId=5
-
-        var viewModel = new CustomerFeedbackViewModel
-        {
-            CompanyBranchOptions = _context.CompanyModel
+        var companies = _context.CompanyModel
+                .Include(c => c.User) // Assuming navigation property exists
+                .OrderBy(c => c.CompanyName)
                 .Select(c => new SelectListItem
                 {
                     Value = c.Id.ToString(),
-                    Text = c.CompanyName + " - " + c.BranchAddress
-                }).ToList()
+                    Text = $"{c.CompanyName} - {c.BranchAddress}"
+                })
+                .ToList();
+
+        string? logoBase64 = null;
+        string? ownerBase64 = null;
+
+        if (companyId.HasValue)
+        {
+            var selectedCompany = _context.CompanyModel
+                .Include(c => c.User)
+                .FirstOrDefault(c =>  c.Id == companyId.Value);
+
+            if (selectedCompany?.User != null)
+            {
+                if (selectedCompany.LogoImage != null)
+                    logoBase64 = $"data:image/png;base64,{Convert.ToBase64String(selectedCompany.LogoImage)}";
+
+                if (selectedCompany.User.OwnerImage != null)
+                    ownerBase64 = $"data:image/png;base64,{Convert.ToBase64String(selectedCompany.User.OwnerImage)}";
+            }
+        }
+
+        var viewModel = new CustomerFeedbackViewModel
+        {
+            //CompanyBranchOptions = companyUsers,
+            CompanyBranchOptions = companies,
+            SelectedCompanyId = companyId,
+            LogoImageBase64 = logoBase64,
+            OwnerImageBase64 = ownerBase64
+
         };
-
-
 
         return View(viewModel);
     }

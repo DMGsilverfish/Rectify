@@ -36,7 +36,7 @@ namespace Rectify.Controllers
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction("Privacy", "Home");
                 }
                 else
                 {
@@ -152,7 +152,7 @@ namespace Rectify.Controllers
 
 
                 await signInManager.SignInAsync(user, false);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Privacy", "Home");
             }
 
             foreach (var error in result.Errors)

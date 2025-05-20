@@ -112,7 +112,7 @@ namespace Rectify.Controllers
                 ticketsQuery = ticketsQuery.Where(t => t.DateOfMessage >= startDate.Value);
 
             if (endDate.HasValue)
-                ticketsQuery = ticketsQuery.Where(t => t.DateOfMessage <= endDate.Value);
+                ticketsQuery = ticketsQuery.Where(t => t.DateOfMessage < endDate.Value.AddDays(1));
 
             ticketsQuery = sortOrder == "asc"
                 ? ticketsQuery.OrderBy(t => t.DateOfMessage)
@@ -122,6 +122,7 @@ namespace Rectify.Controllers
 
             return Json(filteredTickets);
         }
+
         [Authorize]
         [HttpPost]
         public IActionResult UpdateStatus(string ticketId, string status)

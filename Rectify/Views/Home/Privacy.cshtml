@@ -410,7 +410,7 @@
                             row.innerHTML = `
                                 <td>${ticket.ticketID}</td>
                                 ${showCompanyInfo ? `<td>${ticket.companyName || ''}</td><td>${ticket.branchAddress || ''}</td>` : ''}
-                                <td>${dateOnly}</td>
+                                <td class="d-none d-md-table-cell">${dateOnly}</td>
                                 <td>${ticket.status}</td>
                                 <td>${ticket.message}</td>
                                 <td>

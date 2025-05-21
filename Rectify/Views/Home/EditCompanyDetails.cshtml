@@ -83,21 +83,6 @@
                 object-fit: cover;
             }
 
-        .container {
-            display: flex;
-            justify-content: center;
-            padding: 5rem 1rem;
-        }
-
-        .box {
-            background-color: rgba(255, 255, 255, 0.7); /* Transparency without affecting children */
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
-            max-width: 500px;
-            width: 100%;
-            margin: 0 1rem;
-        }
 
     </style>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
@@ -112,7 +97,7 @@
         <a class="btn btn-outline-pink" href="@Url.Action("Privacy", "Home")">Tickets</a>
         <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a> @*user id*@
         <button type="button" class="btn btn-pink" aria-current="page">Edit Company Details</button>
-        <a class="btn btn-outline-pink" href="@Url.Action("Report", "Account")">Report</a>
+        <a class="btn btn-outline-pink" href="@Url.Action("Reports", "Home")">Report</a>
         <button class="btn btn-outline-pink" id="qr-btn"
                 onclick="handleQrCodeCompanySelect('@id')">
             <i class="bi bi-qr-code"></i> QR Code

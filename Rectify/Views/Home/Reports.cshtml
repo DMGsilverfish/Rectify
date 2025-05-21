@@ -1,4 +1,5 @@
-﻿@model Rectify.Models.ViewModels.CompanyDetailsViewModel
+﻿@model Rectify.Models.ViewModels.ReportsViewModel
+
 @{
     ViewData["Title"] = "Edit Company Details";
     Layout = "_Layout";
@@ -83,25 +84,150 @@
 
     </style>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+    <style>
+        .card {
+            padding: 1rem;
+            background-color: #fff;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            max-width: 320px;
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        /* Top section: icon/title + percent */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .title {
+            display: flex;
+            align-items: center;
+        }
+
+            .title span {
+                background-color: #10B981;
+                width: 1.5rem;
+                height: 1.5rem;
+                border-radius: 9999px;
+                display: inline-block;
+            }
+
+        .title-text {
+            margin-left: 0.5rem;
+            color: #374151;
+            font-size: 18px;
+            line-height: 1.2rem;
+        }
+
+        .percent {
+            color: #02972f;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        /* Stats */
+        .data {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            margin-top: 1rem;
+        }
+
+            .data p {
+                margin: 0 0 0.5rem 0;
+                color: #1F2937;
+                font-size: 2.25rem;
+                font-weight: 700;
+                text-align: left;
+            }
+
+            .data small {
+                font-size: 0.9rem;
+                color: #6B7280;
+                margin-bottom: 0.5rem;
+            }
+
+        .range {
+            position: relative;
+            background-color: #E5E7EB;
+            width: 100%;
+            height: 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+            .range .fill {
+                position: absolute;
+                top: 0;
+                left: 0;
+                background-color: #10B981;
+                height: 100%;
+                border-radius: 0.25rem;
+            }
+
+    </style>
 </head>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2 class="mb-0">Your Account Details</h2>
+<div id="ticketHeader" class="d-flex justify-content-between align-items-center mb-3">
+    <div id="ticketHeading">
+        <h2 class="mb-2 mb-md-0">Edit your Details</h2>
+    </div>
 
-    <div class="d-flex gap-2">
+    <div id="ticketButtons" class="d-flex flex-wrap gap-2 justify-content-end">
         <a class="btn btn-outline-pink" href="@Url.Action("Privacy", "Home")">Tickets</a>
-        <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a> @*user id*@
-        <button type="button" class="btn btn-pink" aria-current="page">Edit Company Details</button>
-        <a class="btn btn-outline-pink" href="@Url.Action("Report", "Account")">Report</a>
-        <button class="btn btn-outline-pink" id="qr-btn" data-bs-toggle="modal" data-bs-target="#qrModal"
-                onclick="loadQrCode('@id')">
-            <!-- Pass UserId here -->
+        <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a>
+        <button type="button" class="btn btn-outline-pink" onclick="handleEditCompany('@Model.UserId')">
+            Edit Company Details
+        </button>
+        <a class="btn btn-pink" aria-current="page" href="@Url.Action("Reports", "Home")">Report</a>
+        <button class="btn btn-outline-pink" id="qr-btn" data-bs-toggle="modal"
+                onclick="handleQrCodeCompanySelect('@Model.UserId')">
             <i class="bi bi-qr-code"></i> QR Code
         </button>
 
 
     </div>
 </div>
+
+
+<div style="display: flex; flex-wrap: wrap; gap: 1rem;">
+
+    @foreach (var stat in Model.StatCards)
+    {
+        var percentClass = stat.IsPositiveChange ? "text-green-600" : "text-red-600";
+        var icon = stat.IsPositiveChange
+        ? "<svg ...>↑</svg>" // Replace with actual SVGs
+        : "<svg ...>↓</svg>";
+
+        <div class="card">
+            <div class="card-header">
+                <div class="title">
+                    <span></span>
+                    <div class="title-text">@stat.Title</div>
+                </div>
+                <div class="percent">+100.0%</div>
+            </div>
+
+            <div class="data">
+                <p>@stat.Total</p>
+                <small class="text-gray-500">Avg: @stat.Average?.ToString("0.0")</small>
+                <div class="range">
+                    <div class="fill" style="width:@Math.Min(Math.Abs(stat.PercentChange),100)%"></div>
+                </div>
+            </div>
+        </div>
+
+    }
+</div>
+
+
+
+
+<!--bottom section-->
 
 <!-- QR Code Modal -->
 <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
@@ -116,7 +242,7 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline-pink" onclick="copyQrLink()">Copy Link</button>
-                <button class="btn btn-outline-pink" onclick="window.print()">Print QR Code</button>
+                <button class="btn btn-outline-pink" id="printQrBtn">Print QR Code</button>
             </div>
         </div>
     </div>
@@ -137,34 +263,22 @@
     </div>
 </div>
 
+<!--qr code options-->
+<div class="modal fade" id="qrCompanySelectModal" tabindex="-1" aria-labelledby="qrCompanySelectModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Select a Company for QR Code</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="qr-company-list">
+                <!-- QR company buttons will go here -->
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
-    // Generate the QR code dynamically with pink color
-    window.onload = function() {
-        var qrContainer = document.getElementById("qr-code-container");
-        QRCode.toDataURL('@Url.Action("QrCode", "Account")', {
-            width: 100,  // Size of QR code
-            height: 100,
-            color: {
-                dark: '#ff1493',  // Pink color for the QR code
-                light: '#ffffff'  // White background
-            }
-        }, function (err, url) {
-            if (err) console.error(err);
-            qrContainer.innerHTML = `<img src="${url}" alt="QR Code" style="width:100%; height:100%;">`;
-        });
-    }
-
-    let qrEncodedUrl = ""; // This is the actual URL encoded into the QR code
-
-    function loadQrCode(userId) {
-        const baseUrl = window.location.origin;
-        qrEncodedUrl = `${baseUrl}/Home/Contact?userId=${encodeURIComponent(userId)}`;
-
-        const img = document.getElementById("qrCodeImage");
-        img.src = `/Home/GenerateQrCode?userId=${userId}`;
-    }
-
     function copyQrLink() {
         if (qrEncodedUrl) {
             navigator.clipboard.writeText(qrEncodedUrl)
@@ -173,8 +287,55 @@
         }
     }
 
+        function handleQrCodeCompanySelect(userId) {
+        fetch(`/Home/GetUserCompanies?userId=${encodeURIComponent(userId)}`)
+            .then(res => res.json())
+            .then(companies => {
+                if (companies.length === 1) {
+                    loadQrCode(companies[0].id); // Directly load for the only company
+                } else if (companies.length > 1) {
+                    const container = document.getElementById("company-list");
+                    container.innerHTML = "";
 
-        function handleEditCompany(userId) {
+                    companies.forEach(company => {
+                        const btn = document.createElement("button");
+                        btn.className = "btn btn-outline-pink w-100 mb-2";
+                        btn.innerText = `${company.companyName} - ${company.branchAddress}`;
+                        btn.onclick = () => {
+                            const modal = bootstrap.Modal.getInstance(document.getElementById("companySelectModal"));
+                            modal.hide();
+                            loadQrCode(company.id);
+                        };
+                        container.appendChild(btn);
+                    });
+
+                    const modal = new bootstrap.Modal(document.getElementById("companySelectModal"));
+                    modal.show();
+                } else {
+                    alert("No companies found for this user.");
+                }
+            })
+            .catch(err => {
+                console.error("Error fetching companies:", err);
+                alert("Failed to load companies.");
+            });
+    }
+
+             let currentCompanyId = null;
+
+                function loadQrCode(companyId) {
+                    currentCompanyId = companyId;  // store the selected company id
+                    const baseUrl = window.location.origin;
+                    qrEncodedUrl = `${baseUrl}/Home/Contact?companyId=${encodeURIComponent(companyId)}`;
+
+                    const img = document.getElementById("qrCodeImage");
+                    img.src = `/Home/GenerateQrCode?companyId=${encodeURIComponent(companyId)}&t=${Date.now()}`;
+
+                    const qrModal = new bootstrap.Modal(document.getElementById("qrModal"));
+                    qrModal.show();
+                }
+
+    function handleEditCompany(userId) {
         fetch(`/Home/GetUserCompanies?userId=${encodeURIComponent(userId)}`)
             .then(res => res.json())
             .then(companies => {
@@ -206,4 +367,35 @@
                 alert("Failed to load companies.");
             });
     }
+
+    function printQrCode() {
+                if (!currentCompanyId) {
+                    alert("No company selected for printing.");
+                    return;
+                }
+
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = `/Home/PrintQRCode?companyId=${encodeURIComponent(currentCompanyId)}`;
+                document.body.appendChild(iframe);
+                iframe.onload = function () {
+                    setTimeout(() => document.body.removeChild(iframe), 3000);
+                };
+            }
+
+            document.getElementById("printQrBtn").addEventListener("click", printQrCode);
+
+    //mobile support
+    window.addEventListener('DOMContentLoaded', function () {
+        const isMobile = window.innerWidth <= 768;
+        if (isMobile) {
+            document.getElementById('ticketHeader')?.classList.add('mobile-stack');
+        }
+    })
 </script>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

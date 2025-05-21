@@ -98,7 +98,7 @@
         <a class="btn btn-pink" aria-current="page" href="#">Tickets</a>
         <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a>
         <button type="button" class="btn btn-outline-pink" onclick="handleEditCompany('@Model.User.Id')">Edit Company Details</button>
-        <a class="btn btn-outline-pink" href="@Url.Action("Reports", "Home", new {userId = id})">Report</a>
+        <a class="btn btn-outline-pink" href="@Url.Action("Reports", "Home")">Report</a>
         <button class="btn btn-outline-pink" id="qr-btn" data-bs-toggle="modal"
                 onclick="handleQrCodeCompanySelect('@Model.User.Id')">
             <i class="bi bi-qr-code"></i> QR Code
@@ -369,7 +369,7 @@
                 console.error("Error fetching companies:", err);
                 alert("Failed to load companies.");
             });
-    }
+        }
 
       function printQrCode() {
                 if (!currentCompanyId) {

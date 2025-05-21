@@ -493,23 +493,86 @@ namespace Rectify.Controllers
 
         [Authorize]
         [HttpGet]
-        public IActionResult Reports(int companyID, string userId)
+        public IActionResult Reports()
         {
-
-            var company = context.CompanyModel.FirstOrDefault(c => c.Id == companyID);
             var currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (company == null)
+
+            var companies = context.CompanyModel
+                .Where(c => c.UserId == currentUserId)
+                .ToList();
+
+            if (!companies.Any())
             {
                 return NotFound();
             }
-            var viewModel = new CompanyDetailsViewModel
+
+            var companyIds = companies.Select(c => c.Id).ToList();
+            var now = DateTime.Now;
+
+            var startOfThisMonth = new DateTime(now.Year, now.Month, 1);
+            var startOfLastMonth = startOfThisMonth.AddMonths(-1);
+            var endOfLastMonth = startOfThisMonth.AddDays(-1);
+
+            // All tickets this user has access to
+            var allTickets = context.TicketModel
+                .Where(t => companyIds.Contains(t.CompanyID))
+                .ToList();
+
+            var currentMonthTickets = allTickets
+                .Where(t => t.DateOfMessage >= startOfThisMonth)
+                .ToList();
+
+            var lastMonthTickets = allTickets
+                .Where(t => t.DateOfMessage >= startOfLastMonth && t.DateOfMessage < startOfThisMonth)
+                .ToList();
+
+            var statuses = new[] { "Open", "Pending", "Closed" };
+            var statCards = new List<TicketStatsCard>();
+
+            foreach (var status in statuses)
+            {
+                var totalCurrent = currentMonthTickets.Count(t => t.Status == status);
+                var totalPrevious = lastMonthTickets.Count(t => t.Status == status);
+
+                double? average = companies.Count > 1
+                    ? Math.Round((double)totalCurrent / companies.Count, 1)
+                    : null;
+
+                double percentChange;
+                if (totalPrevious > 0)
+                {
+                    percentChange = ((double)(totalCurrent - totalPrevious) / totalPrevious) * 100;
+                }
+                else if (totalCurrent > 0)
+                {
+                    percentChange = 100; // All new
+                }
+                else
+                {
+                    percentChange = 0;
+                }
+
+                statCards.Add(new TicketStatsCard
+                {
+                    Title = $"{status} Tickets",
+                    Total = totalCurrent,
+                    Average = average,
+                    PercentChange = Math.Round(percentChange, 1)
+                });
+            }
+
+            var viewModel = new ReportsViewModel
             {
                 UserId = currentUserId,
-                Company = company
+                Companies = companies,
+                Company = companies.First(),
+                StatCards = statCards
             };
 
             return View(viewModel);
         }
+
+
 
 
         private void SendEmail(string toEmail, string subject, string body)

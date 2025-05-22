@@ -211,9 +211,8 @@
             </div>
             <div class="modal-footer">
                 <button class="btn btn-outline-pink" onclick="copyQrLink()">Copy Link</button>
+                <button class="btn-outline-pink" id="saveQrBtn">Save Image</button>
                 <button class="btn btn-outline-pink" id="printQrBtn">Print QR Code</button>
-
-
             </div>
         </div>
     </div>
@@ -456,6 +455,25 @@
                 bsAlert.close();
             });
         }, 5000);
+
+
+        document.getElementById("saveQrBtn").addEventListener("click", function () {
+            if (!currentCompanyId) {
+                alert("No company selected.");
+                return;
+            }
+
+            const url = `/Home/GenerateQrCode?companyId=${encodeURIComponent(currentCompanyId)}&download=true&t=${Date.now()}`;
+            const fileName = `QRCode_${currentCompanyId}.png`;
+
+            // Create a temporary link and simulate click
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        });
     
         
         

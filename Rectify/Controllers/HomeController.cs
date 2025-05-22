@@ -154,13 +154,20 @@ namespace Rectify.Controllers
         [Authorize]
         public IActionResult GenerateQrCode(string companyId)
         {
+            if (string.IsNullOrEmpty(companyId))
+                return BadRequest("Company ID is missing.");
+
             var url = Url.Action("ContactStep1", "Feedback", new { companyId }, protocol: Request.Scheme);
+            if (string.IsNullOrEmpty(url))
+                return BadRequest("Could not generate URL.");
 
             using var qrGenerator = new QRCodeGenerator();
             using var qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
 
             var qrCode = new PngByteQRCode(qrCodeData);
             var qrCodeBytes = qrCode.GetGraphic(20); // byte[]
+            if (qrCodeBytes == null || qrCodeBytes.Length == 0)
+                return StatusCode(500, "QR code generation failed.");
 
             // Load original bitmap (indexed pixel format)
             using var qrStream = new MemoryStream(qrCodeBytes);
@@ -193,8 +200,11 @@ namespace Rectify.Controllers
             using var output = new MemoryStream();
             qrBitmap.Save(output, System.Drawing.Imaging.ImageFormat.Png);
 
-            return File(output.ToArray(), "image/png");
+            return File(output.ToArray(), "image/png","QRCode.png");
         }
+
+        
+
 
 
 

@@ -160,10 +160,43 @@ namespace Rectify.Controllers
             using var qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
 
             var qrCode = new PngByteQRCode(qrCodeData);
-            var qrCodeImage = qrCode.GetGraphic(20); // This returns a byte[]
+            var qrCodeBytes = qrCode.GetGraphic(20); // byte[]
 
-            return File(qrCodeImage, "image/png");
+            // Load original bitmap (indexed pixel format)
+            using var qrStream = new MemoryStream(qrCodeBytes);
+            using var originalQrBitmap = new Bitmap(qrStream);
+
+            // Create a new bitmap with pixel format that supports drawing
+            using var qrBitmap = new Bitmap(originalQrBitmap.Width, originalQrBitmap.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            // Copy original bitmap into new bitmap
+            using (var g = Graphics.FromImage(qrBitmap))
+            {
+                g.DrawImage(originalQrBitmap, 0, 0);
+            }
+
+            // Load logo
+            string logoPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "LogoPlaceholder.jpeg");
+            using var logo = new Bitmap(logoPath);
+
+            // Resize logo if needed
+            int logoSize = qrBitmap.Width / 5;
+            using var resizedLogo = new Bitmap(logo, new Size(logoSize, logoSize));
+
+            // Overlay logo in center
+            using var graphics = Graphics.FromImage(qrBitmap);
+            int x = (qrBitmap.Width - logoSize) / 2;
+            int y = (qrBitmap.Height - logoSize) / 2;
+            graphics.DrawImage(resizedLogo, x, y, logoSize, logoSize);
+
+            // Save final image to byte[]
+            using var output = new MemoryStream();
+            qrBitmap.Save(output, System.Drawing.Imaging.ImageFormat.Png);
+
+            return File(output.ToArray(), "image/png");
         }
+
+
 
         [Authorize]
         public IActionResult PrintQRCode(string companyId)

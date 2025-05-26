@@ -132,8 +132,15 @@ public class FeedbackController : Controller
             DateLastUpdated = currentDate
         };
 
+        int nextCustomer = 1;
+        if (_context.CustomerModel.Any())
+        {
+            nextCustomer = _context.CustomerModel.Max(c =>  c.Id) + 1;
+        }
+
         var customer = new CustomerModel
         {
+            Id = nextCustomer,
             CustomerName = customerName,
             CustomerEmail = model.Email,
             CustomerPhone = model.PhoneNumber,

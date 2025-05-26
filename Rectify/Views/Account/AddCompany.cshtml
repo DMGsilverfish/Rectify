@@ -1,0 +1,123 @@
+﻿@model Rectify.Models.ViewModels.CompanyViewModel
+@{
+    ViewData["Title"] = "Add Company";
+    Layout = "_Layout";
+}
+<head>
+    <link href="~/css/mobile.css" rel="stylesheet" asp-append-version="true" />
+    <style>
+
+        .btn-pink {
+            color: #fff;
+            background-color: #ff1493;
+            border-color: #ff1493;
+            border-radius: 0.25rem; /* Matches Bootstrap's default */
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+        }
+
+            .btn-pink:hover {
+                background-color: #e01384; /* Slightly darker pink */
+                border-color: #e01384;
+                color: #fff;
+            }
+
+            .btn-pink:active {
+                transform: scale(0.95);
+            }
+
+        .nav-pills .btn-pink {
+            border-radius: 50rem; /* pill shape */
+            padding: 0.4rem 1rem;
+            font-size: 0.95rem;
+            background-color: #ff1493;
+            color: white !important;
+        }
+
+            .nav-pills .btn-pink:hover {
+                background-color: #e01384;
+                color: white;
+            }
+
+        .btn-outline-pink {
+            color: #ff1493;
+            border: 2px solid #ff1493;
+            background-color: transparent;
+            border-radius: 0.25rem;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+        }
+
+            .btn-outline-pink:hover {
+                background-color: #ff1493;
+                color: #fff;
+                border-color: #ff1493;
+            }
+
+        .qr-btn {
+            display: inline-block;
+            width: 30px; /* Adjust the size */
+            height: 30px; /* Adjust the size */
+            border: 2px solid #ff1493; /* Pink border */
+            border-radius: 0.25rem; /* Rounded corners like other buttons */
+            transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+            text-align: center;
+        }
+
+            .qr-btn:hover {
+                background-color: #fff; /* White background on hover */
+                border-color: #ff1493; /* Pink border on hover */
+            }
+
+            .qr-btn img {
+                width: 100%; /* Ensures image fits into the button */
+                height: 100%; /* Ensures image fits into the button */
+                object-fit: cover;
+            }
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+
+</head>
+
+<form asp-action="AddCompany" asp-controller="Account" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <div class="mb-3">
+        <label asp-for="CompanyName" class="form-label"></label>
+        <input asp-for="CompanyName" class="form-control" required />
+        <span asp-validation-for="CompanyName" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="City" class="form-label"></label>
+        <input asp-for="City" class="form-control" required />
+        <span asp-validation-for="City" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="BranchAddress" class="form-label"></label>
+        <input asp-for="BranchAddress" class="form-control" required />
+        <span asp-validation-for="BranchAddress" class="text-danger"></span>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="LogoImageFile" class="form-label"></label>
+        <input asp-for="LogoImageFile" type="file" class="form-control" accept="image/*" />
+        <span asp-validation-for="LogoImageFile" class="text-danger"></span>
+    </div>
+
+    <input type="submit" value="Add Company" class="btn btn-pink w-100 p-2" />
+
+    <div class="text-center mt-3">
+        <a asp-controller="Home" asp-action="Privacy" class="text-decoration-none">Back</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

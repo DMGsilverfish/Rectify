@@ -250,5 +250,46 @@ namespace Rectify.Controllers
             await signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
+
+        // Show empty form
+        [HttpGet]
+        public IActionResult AddCompany()
+        {
+            return View();
+        }
+
+        // Handle form post
+        [HttpPost]
+        public async Task<IActionResult> AddCompany(CompanyViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await userManager.GetUserAsync(User);
+            if (user == null)
+                return Challenge();
+
+            var company = new CompanyModel
+            {
+                CompanyName = model.CompanyName,
+                City = model.City,
+                BranchAddress = model.BranchAddress,
+                UserId = user.Id
+            };
+
+            if (model.LogoImageFile != null)
+            {
+                using var ms = new MemoryStream();
+                await model.LogoImageFile.CopyToAsync(ms);
+                company.LogoImage = ms.ToArray();
+            }
+
+            context.CompanyModel.Add(company);
+            await context.SaveChangesAsync();
+
+            return RedirectToAction("Privacy", "Home");
+        }
+
+
     }
 }

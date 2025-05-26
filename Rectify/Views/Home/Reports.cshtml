@@ -328,7 +328,7 @@
                 function loadQrCode(companyId) {
                     currentCompanyId = companyId;  // store the selected company id
                     const baseUrl = window.location.origin;
-                    qrEncodedUrl = `${baseUrl}/Home/Contact?companyId=${encodeURIComponent(companyId)}`;
+                    qrEncodedUrl = `${baseUrl}/Feedback/ContactStep1?companyId=${encodeURIComponent(companyId)}`;
 
                     const img = document.getElementById("qrCodeImage");
                     img.src = `/Home/GenerateQrCode?companyId=${encodeURIComponent(companyId)}&t=${Date.now()}`;

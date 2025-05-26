@@ -84,13 +84,16 @@ namespace Rectify.Controllers
         }
 
         [Authorize]
-        public async Task<IActionResult> FilterTickets(DateTime? startDate, DateTime? endDate, string sortOrder = "desc")
+        public async Task<IActionResult> FilterTickets(DateTime? startDate, DateTime? endDate, string sortOrder = "desc", [FromQuery] List<string> statuses = null)
         {
             var user = await userManager.GetUserAsync(User);
 
             var companies = await context.CompanyModel
                 .Where(c => c.UserId == user.Id)
                 .ToListAsync();
+
+            
+
 
             var companyIds = companies.Select(c => c.Id).ToList();
 
@@ -107,6 +110,9 @@ namespace Rectify.Controllers
                                    t.Status,
                                    c.Message
                                };
+
+            if (statuses != null && statuses.Any())
+                ticketsQuery = ticketsQuery.Where(t => statuses.Contains(t.Status));
 
             if (startDate.HasValue)
                 ticketsQuery = ticketsQuery.Where(t => t.DateOfMessage >= startDate.Value);

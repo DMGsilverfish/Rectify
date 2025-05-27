@@ -1,18 +1,35 @@
 ﻿@{
     ViewData["Title"] = "Feedback Submitted";
-    string? ticketID = ViewBag.TicketID as string;
+    string? ticketID = TempData["TicketID"] as string;
+    string? waLink = TempData["WhatsAppLink"] as string;
 }
 
 <h2>@ViewData["Title"]</h2>
 
 @if (!string.IsNullOrEmpty(ticketID))
 {
-        <p>Thank you for your feedback! Your ticket ID is:</p>
-        <div class="alert alert-success">
-            <strong>@ticketID</strong>
-        </div>
+    <p>Thank you for your feedback! Your ticket ID is:</p>
+    <div class="alert alert-success">
+        <strong>@ticketID</strong>
+    </div>
 }
 else
 {
-        <p>Something went wrong. Please try again.</p>
+    <p>Something went wrong. Please try again.</p>
+}
+
+@if (!string.IsNullOrEmpty(waLink))
+{
+    <script>
+        window.onload = function () {
+            setTimeout(function () {
+                const win = window.open("@waLink", "_blank");
+                if (!win) {
+                    console.log("Popup blocked. Please use the link below.");
+                }
+            }, 100);
+        };
+    </script>
+
+    <p>We've redirected you to WhatsApp. If it didn't open, <a href="@waLink" target="_blank">click here</a>.</p>
 }

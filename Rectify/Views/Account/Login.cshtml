@@ -36,19 +36,21 @@
             </div>
             <input type="submit" value="Login" class="btn btn-pink w-100 p-2"/>
 
-            <p class="text-center mt-2">
-                Register Business? <a asp-controller="Account" asp-action="Register" class="text-decoration-none">Register</a>
-            </p>
-
-            <div class="text-center">
-                <a asp-controller="Home" asp-action="Index" class="text-decoration-none mt-3">Back</a>
-            </div>
+            
         </form>
         <div class="text-center mt-3">
             <a class="btn btn-outline-dark w-100" href="@Url.Action("ExternalLogin", "Account", new { provider = "Google", returnUrl = "/" })">
                 <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" width="20" class="me-2" />
                 Sign in with Google
             </a>
+        </div>
+
+        <p class="text-center mt-2">
+            Register Business? <a asp-controller="Account" asp-action="Register" class="text-decoration-none">Register</a>
+        </p>
+
+        <div class="text-center">
+            <a asp-controller="Home" asp-action="Index" class="text-decoration-none mt-3">Back</a>
         </div>
 
 

@@ -132,15 +132,15 @@ public class FeedbackController : Controller
             DateLastUpdated = currentDate
         };
 
-        int nextCustomer = 1;
-        if (_context.CustomerModel.Any())
-        {
-            nextCustomer = _context.CustomerModel.Max(c =>  c.Id) + 1;
-        }
+        //int nextCustomer = 1;
+        //if (_context.CustomerModel.Any())
+        //{
+        //    nextCustomer = _context.CustomerModel.Max(c =>  c.Id) + 1;
+        //}
 
         var customer = new CustomerModel
         {
-            Id = nextCustomer,
+            //Id = nextCustomer,
             CustomerName = customerName,
             CustomerEmail = model.Email,
             CustomerPhone = model.PhoneNumber,
@@ -195,6 +195,30 @@ public class FeedbackController : Controller
         }
         else if (preferredContact == "WhatsApp")
         {
+            var businessNumber = company.User.PhoneNumber;
+
+            //insert code to send message
+            // Compose the WhatsApp message text
+            var waMessage = $"Customer Query from {customerName ?? "Anonymous"}:\n" +
+                            $"Email: {model.Email}\n" +
+                            $"Phone: {model.PhoneNumber}\n" +
+                            $"Message:\n{message}";
+
+            // Encode message for URL
+            string encodedMessage = Uri.EscapeDataString(waMessage);
+
+            // Clean number for wa.me link (digits only, no plus)
+            string cleanNumber = new string(businessNumber.Where(char.IsDigit).ToArray());
+
+            // WhatsApp deep link URL
+            string waLink = $"https://wa.me/{cleanNumber}?text={encodedMessage}";
+
+            // Store the WhatsApp link in TempData to show on confirmation page
+            TempData["WhatsAppLink"] = waLink;
+            TempData["TicketID"] = ticketID;
+
+            //return Redirect(waLink);
+            return RedirectToAction("ContactConfirmation");
 
         }
         else
@@ -204,16 +228,29 @@ public class FeedbackController : Controller
 
         TempData.Clear();
 
-        return RedirectToAction("ContactConfirmation", new { id = ticketID });
+        return RedirectToAction("ContactConfirmation");
     }
 
 
     [HttpGet]
-    public IActionResult ContactConfirmation(string id)
+    public IActionResult ContactConfirmation()
     {
-        ViewBag.TicketID = id;
+        // Load ticket ID and WhatsApp link from TempData (if available)
+        if (TempData.ContainsKey("TicketID"))
+        {
+            ViewBag.TicketID = TempData["TicketID"];
+        }
+
+        if (TempData.ContainsKey("WhatsAppLink"))
+        {
+            ViewBag.WhatsAppLink = TempData["WhatsAppLink"];
+        }
+
+        
+
         return View();
     }
+
 
     private void SendEmail(string toEmail, string subject, string body)
     {

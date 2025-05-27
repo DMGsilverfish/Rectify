@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Rectify.Data;
 using Rectify.Models;
 using Rectify.Models.ViewModels;
+using System.Security.Claims;
 using System.Text.Json;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
@@ -14,12 +15,14 @@ namespace Rectify.Controllers
         private readonly SignInManager<ApplicationUser> signInManager;
         private readonly UserManager<ApplicationUser> userManager;
         private readonly ApplicationDbContext context;
+        private readonly IConfiguration configuration;
 
-        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ApplicationDbContext context)
+        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ApplicationDbContext context, IConfiguration configuration)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.context = context;
+            this.configuration = configuration;
         }
 
         public IActionResult Login()
@@ -46,6 +49,80 @@ namespace Rectify.Controllers
             }
             return View(model);
         }
+
+        [HttpGet]
+        public IActionResult ExternalLogin(string provider, string returnUrl = "/")
+        {
+            var redirectUrl = Url.Action("ExternalLoginCallback", "Account", new { returnUrl });
+            var properties = signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
+            return Challenge(properties, provider);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ExternalLoginCallback(string returnUrl = "/", string remoteError = null)
+        {
+            if (remoteError != null)
+            {
+                ModelState.AddModelError(string.Empty, $"Error from external provider: {remoteError}");
+                return RedirectToAction("Login");
+            }
+
+            var info = await signInManager.GetExternalLoginInfoAsync();
+            if (info == null)
+            {
+                return RedirectToAction("Login");
+            }
+
+            // Sign in the user with this external login provider if the user already has a login.
+            var result = await signInManager.ExternalLoginSignInAsync(info.LoginProvider, info.ProviderKey, isPersistent: false);
+            if (result.Succeeded)
+            {
+                return LocalRedirect(returnUrl);
+            }
+
+            // If the user does not have an account, we create one
+            var email = info.Principal.FindFirstValue(ClaimTypes.Email);
+            if (email != null)
+            {
+                var user = await userManager.FindByEmailAsync(email);
+                if (user == null)
+                {
+                    user = new ApplicationUser
+                    {
+                        UserName = email,
+                        Email = email
+                    };
+                    var createResult = await userManager.CreateAsync(user);
+                    if (!createResult.Succeeded)
+                    {
+                        ModelState.AddModelError(string.Empty, "Failed to create user.");
+                        return RedirectToAction("Login");
+                    }
+
+                    await userManager.AddLoginAsync(user, info);
+                }
+
+                await signInManager.SignInAsync(user, isPersistent: false);
+                return LocalRedirect(returnUrl);
+            }
+
+            // If email not found
+            return RedirectToAction("Login");
+        }
+
+
+        private IActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction("Privacy", "Home");
+            }
+        }
+
 
         public IActionResult Register()
         {

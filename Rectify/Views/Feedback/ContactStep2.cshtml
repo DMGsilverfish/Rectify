@@ -13,12 +13,27 @@
 
 <div class="container">
     <div class="box">
-        <h2>We will try Rectify this issue</h2>
-        <h2>Do you want to hear back?</h2>
+        @* Owner image and text *@
+        @if (!string.IsNullOrEmpty(Model.OwnerImageBase64))
+        {
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <img id="ownerImage" src="@Model.OwnerImageBase64" class="rounded-image" style="width: 80px; height: 80px;" />
+                <div>
+                    <h2>
+                        Nice to meet you, could you please introduce yourself
+                    </h2>
+                </div>
+            </div>
+        }
+        else
+        {
+            <h2>Nice to meet you, could you please introduce yourself</h2>
+        }
+
         <form asp-action="ContactStep2" method="post">
             <div class="form-group">
-                <label asp-for="CustomerName">Fullname: (optional)</label>
-                <input asp-for="CustomerName" class="form-control" />
+                <label asp-for="CustomerName">Fullname:</label>
+                <input asp-for="CustomerName" class="form-control" required/>
                 <span asp-validation-for="CustomerName" class="text-danger"></span>
             </div>
             <button type="submit" class="btn btn-pink" style="margin-top: 20px; display: block; margin-left: auto; margin-right: auto;">Next</button>

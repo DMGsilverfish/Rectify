@@ -17,6 +17,8 @@ namespace Rectify.Models.ViewModels
         public string? LogoImageBase64 { get; set; }
         public string? OwnerImageBase64 { get; set; }
 
+        public string? OwnerName { get; set; }
+
     }
 
 }

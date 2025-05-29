@@ -83,6 +83,12 @@
                 object-fit: cover;
             }
 
+        .box {
+            border: 1px solid #ccc; /* light gray border */
+            padding: 10px; /* some padding inside the border */
+            box-sizing: border-box; /* so padding doesn't increase overall size */
+            border-radius: 8px;
+        }
 
     </style>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
@@ -124,52 +130,54 @@
 }
 
 
-<form asp-action="EditCompanyDetails" method="post" enctype="multipart/form-data">
-    @Html.AntiForgeryToken()
-    <input type="hidden" asp-for="Company.UserId"/>
-    <input type="hidden" asp-for="Company.Id" />
+<div class="box">
+    <form asp-action="EditCompanyDetails" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        <input type="hidden" asp-for="Company.UserId"/>
+        <input type="hidden" asp-for="Company.Id" />
 
-    <div class="form-group">
-        <label asp-for="Company.CompanyName"></label>
-        <input asp-for="Company.CompanyName" class="form-control" />
-        <span asp-validation-for="Company.CompanyName" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="Company.CompanyName"></label>
+            <input asp-for="Company.CompanyName" class="form-control" />
+            <span asp-validation-for="Company.CompanyName" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="Company.City"></label>
-        <input asp-for="Company.City" class="form-control" />
-        <span asp-validation-for="Company.City" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="Company.City"></label>
+            <input asp-for="Company.City" class="form-control" />
+            <span asp-validation-for="Company.City" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label asp-for="Company.BranchAddress"></label>
-        <input asp-for="Company.BranchAddress" class="form-control" />
-        <span asp-validation-for="Company.BranchAddress" class="text-danger"></span>
-    </div>
+        <div class="form-group">
+            <label asp-for="Company.BranchAddress"></label>
+            <input asp-for="Company.BranchAddress" class="form-control" />
+            <span asp-validation-for="Company.BranchAddress" class="text-danger"></span>
+        </div>
 
-    <div class="form-group">
-        <label>Logo Image</label><br />
-        @if (Model.Company.LogoImage != null)
-        {
-            <img src="data:image/png;base64,@Convert.ToBase64String(Model.Company.LogoImage)" style="max-height: 100px;" class="mb-2" />
+        <div class="form-group">
+            <label>Logo Image</label><br />
+            @if (Model.Company.LogoImage != null)
+            {
+                <img src="data:image/png;base64,@Convert.ToBase64String(Model.Company.LogoImage)" style="max-height: 100px;" class="mb-2" />
 
-            <br />
-        }
-        <input type="file" name="logoFile" accept="image/*" class="form-control-file" />
-    </div>
-    <input type="hidden" name="UserId" value="@Model.UserId" />
+                <br />
+            }
+            <input type="file" name="logoFile" accept="image/*" class="form-control-file" />
+        </div>
+        <input type="hidden" name="UserId" value="@Model.UserId" />
 
 
 
-    <button type="submit" class="btn btn-primary">Save Changes</button>
-</form>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+    </form>
+</div>
 
 <!-- QR Code Modal -->
 <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content text-center">
             <div class="modal-header">
-                <h5 class="modal-title" id="qrModalLabel">Scan to Give Feedback</h5>
+                <h5 class="modal-title" id="qrModalLabel">Company QR Code</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

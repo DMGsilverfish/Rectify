@@ -1,0 +1,85 @@
+﻿@using Rectify.Models.ViewModels
+@model CustomerFeedbackViewModel
+
+@{
+    ViewData["Title"] = "Select Company";
+    Layout = "_Layout";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/Customer.css" asp-append-version="true" />
+</head>
+
+<div class="container">
+    <div class="box">
+        <h2>Step 1: Choose the company</h2>
+        <p>Select the company you wish to give feedback to.</p>
+
+        <form asp-action="ContactStep0" method="post">
+            <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px;">
+                <div id="logoContainer" style="display: @(Model.LogoImageBase64 != null ? "block" : "none")">
+                    <img id="companyLogo" src="@Model.LogoImageBase64" class="rounded-image" />
+                </div>
+
+                <div id="ownerImageContainer" style="display: @(Model.OwnerImageBase64 != null ? "block" : "none")">
+                    <img id="ownerImage" src="@Model.OwnerImageBase64" class="rounded-image" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="SelectedCompanyId">Select Company:</label>
+                <select asp-for="SelectedCompanyId" asp-items="Model.CompanyBranchOptions" class="form-control select2" id="companyBranchSelect" required>
+                    <option value="">-- Select Company and Branch --</option>
+                </select>
+                <span asp-validation-for="SelectedCompanyId" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-pink" style="margin-top: 20px; display: block; margin-left: auto; margin-right: auto;">Next</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            $('.select2').select2({
+                placeholder: "Select or search company and branch",
+                allowClear: true
+            });
+
+            $('#companyBranchSelect').change(function () {
+                var selectedUserId = $(this).val();
+
+                if (selectedUserId) {
+                    $.ajax({
+                        url: '@Url.Action("GetCompanyImages", "Home")',
+                        type: 'GET',
+                        data: { companyID: selectedUserId },
+                        success: function (data) {
+                            if (data.logoImageBase64) {
+                                $('#companyLogo').attr('src', data.logoImageBase64);
+                                $('#logoContainer').show();
+                            } else {
+                                $('#logoContainer').hide();
+                            }
+
+                            if (data.ownerImageBase64) {
+                                $('#ownerImage').attr('src', data.ownerImageBase64);
+                                $('#ownerImageContainer').show();
+                            } else {
+                                $('#ownerImageContainer').hide();
+                            }
+                        },
+                        error: function () {
+                            console.error('Error fetching images.');
+                        }
+                    });
+                } else {
+                    $('#logoContainer').hide();
+                    $('#ownerImageContainer').hide();
+                }
+            });
+        });
+    </script>
+}

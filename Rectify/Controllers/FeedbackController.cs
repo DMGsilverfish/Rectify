@@ -23,6 +23,45 @@ public class FeedbackController : Controller
     }
 
     [HttpGet]
+    public IActionResult ContactStep0()
+    {
+        var companies = _context.CompanyModel
+            .Include(c => c.User)
+            .OrderBy(c => c.CompanyName)
+            .Select(c => new SelectListItem
+            {
+                Value = c.Id.ToString(),
+                Text = $"{c.CompanyName} - {c.BranchAddress}"
+            }).ToList();
+
+        var viewModel = new CustomerFeedbackViewModel
+        {
+            CompanyBranchOptions = companies
+        };
+
+        return View(viewModel);
+    }
+
+    [HttpPost]
+    public IActionResult ContactStep0(CustomerFeedbackViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            model.CompanyBranchOptions = _context.CompanyModel
+                .OrderBy(c => c.CompanyName)
+                .Select(c => new SelectListItem
+                {
+                    Value = c.Id.ToString(),
+                    Text = c.CompanyName + " - " + c.BranchAddress
+                }).ToList();
+            return View(model);
+        }
+
+        return RedirectToAction("ContactStep1", new { companyId = model.SelectedCompanyId });
+    }
+
+
+    [HttpGet]
     public IActionResult ContactStep1(int? companyId)
     {
         //https://localhost:7192/Feedback/ContactStep1?companyId=5
@@ -40,6 +79,7 @@ public class FeedbackController : Controller
 
         string? logoBase64 = null;
         string? ownerBase64 = null;
+        string? ownername = null;
 
         if (companyId.HasValue)
         {
@@ -54,16 +94,20 @@ public class FeedbackController : Controller
 
                 if (selectedCompany.User.OwnerImage != null)
                     ownerBase64 = $"data:image/png;base64,{Convert.ToBase64String(selectedCompany.User.OwnerImage)}";
+                ownername = selectedCompany.User.FullName;
             }
         }
 
+       
+
         var viewModel = new CustomerFeedbackViewModel
         {
-            //CompanyBranchOptions = companyUsers,
+            
             CompanyBranchOptions = companies,
             SelectedCompanyId = companyId,
             LogoImageBase64 = logoBase64,
-            OwnerImageBase64 = ownerBase64
+            OwnerImageBase64 = ownerBase64,
+            OwnerName = ownername
 
         };
 
@@ -86,13 +130,21 @@ public class FeedbackController : Controller
 
         TempData["SelectedCompanyId"] = model.SelectedCompanyId;
         TempData["Message"] = model.Message;
+        TempData.Keep("OwnerImageBase64");
         return RedirectToAction("ContactStep2");
     }
 
     [HttpGet]
     public IActionResult ContactStep2()
     {
-        return View();
+        var viewModel = new CustomerFeedbackViewModel
+        {
+            OwnerImageBase64 = TempData["OwnerImageBase64"] as string
+        };
+
+        TempData.Keep("OwnerImageBase64");
+
+        return View(viewModel);
     }
 
     [HttpPost]
@@ -100,6 +152,8 @@ public class FeedbackController : Controller
     {
         // No validation required since name is optional
         TempData["CustomerName"] = model.CustomerName;
+        TempData.Keep("OwnerImageBase64");
+
         return RedirectToAction("ContactStep3");
     }
 
@@ -107,6 +161,8 @@ public class FeedbackController : Controller
     [HttpGet]
     public IActionResult ContactStep3()
     {
+        TempData.Keep("OwnerImageBase64");
+
         return View();
     }
 

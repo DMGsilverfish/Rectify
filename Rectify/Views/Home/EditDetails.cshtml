@@ -82,6 +82,14 @@
                 object-fit: cover;
             }
 
+        .box {
+            border: 1px solid #ccc; /* light gray border */
+            padding: 10px; /* some padding inside the border */
+            box-sizing: border-box; /* so padding doesn't increase overall size */
+            border-radius: 8px;
+        }
+
+
 
     </style>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
@@ -170,7 +178,7 @@
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content text-center">
             <div class="modal-header">
-                <h5 class="modal-title" id="qrModalLabel">Scan to Give Feedback</h5>
+                <h5 class="modal-title" id="qrModalLabel">Company QR Code</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">

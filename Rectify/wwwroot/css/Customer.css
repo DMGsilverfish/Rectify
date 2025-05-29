@@ -112,5 +112,9 @@ select.form-control,
     border: 2px solid #ff1493; /* Optional: pink border for styling */
 }
 
+.light-green-bg {
+    background-color: #D9EFD0; /* Light green */
+}
+
 
 

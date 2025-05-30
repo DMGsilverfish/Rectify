@@ -48,6 +48,7 @@ namespace Rectify.Controllers
         [Authorize]
         public async Task<IActionResult> Privacy()
         {
+            TempData.Clear();
             var user = await userManager.GetUserAsync(User);
 
             // Get all company IDs linked to the user (assumes such a relationship)

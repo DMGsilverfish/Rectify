@@ -26,6 +26,7 @@ public class FeedbackController : Controller
     [HttpGet]
     public IActionResult ContactStep0()
     {
+        TempData.Clear();
         var companies = _context.CompanyModel
             .Include(c => c.User)
             .OrderBy(c => c.CompanyName)

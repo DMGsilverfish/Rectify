@@ -10,6 +10,7 @@ using System;
 using System.Linq;
 using System.Net.Mail;
 using System.Net;
+using System.ComponentModel.Design;
 
 public class FeedbackController : Controller
 {
@@ -130,19 +131,48 @@ public class FeedbackController : Controller
 
         TempData["SelectedCompanyId"] = model.SelectedCompanyId;
         TempData["Message"] = model.Message;
-        TempData.Keep("OwnerImageBase64");
+        //TempData.Keep("OwnerImageBase64");
         return RedirectToAction("ContactStep2");
     }
 
     [HttpGet]
     public IActionResult ContactStep2()
     {
+        var companyId = TempData["SelectedCompanyId"] as int?; //added this in
+        string? logoBase64 = null;
+        string? ownerBase64 = null;
+        string? ownerName = null;
+
+        if (companyId.HasValue)
+        {
+            var selectedCompany = _context.CompanyModel
+            .Include(c => c.User)
+                .FirstOrDefault(c => c.Id == companyId.Value);
+
+            if (selectedCompany?.User != null)
+            {
+                if (selectedCompany.LogoImage != null)
+                    logoBase64 = $"data:image/png;base64,{Convert.ToBase64String(selectedCompany.LogoImage)}";
+
+                if (selectedCompany.User.OwnerImage != null)
+                    ownerBase64 = $"data:image/png;base64,{Convert.ToBase64String(selectedCompany.User.OwnerImage)}";
+
+                ownerName = selectedCompany.User.FullName;
+            }
+        }
+
         var viewModel = new CustomerFeedbackViewModel
         {
-            OwnerImageBase64 = TempData["OwnerImageBase64"] as string
+            SelectedCompanyId = companyId,
+            LogoImageBase64 = logoBase64,
+            OwnerImageBase64 = ownerBase64,
+            OwnerName = ownerName,
+            Message = TempData["Message"] as string
         };
 
-        TempData.Keep("OwnerImageBase64");
+        // Keep for the next step or if the user goes back
+        TempData.Keep("SelectedCompanyId");
+        TempData.Keep("Message");
 
         return View(viewModel);
     }
@@ -150,9 +180,10 @@ public class FeedbackController : Controller
     [HttpPost]
     public IActionResult ContactStep2(CustomerFeedbackViewModel model)
     {
+
         // No validation required since name is optional
         TempData["CustomerName"] = model.CustomerName;
-        TempData.Keep("OwnerImageBase64");
+        
 
         return RedirectToAction("ContactStep3");
     }
@@ -161,10 +192,47 @@ public class FeedbackController : Controller
     [HttpGet]
     public IActionResult ContactStep3()
     {
-        TempData.Keep("OwnerImageBase64");
+        var companyId = TempData["SelectedCompanyId"] as int?;
+        string? logoBase64 = null;
+        string? ownerBase64 = null;
+        string? ownerName = null;
 
-        return View();
+        if (companyId.HasValue)
+        {
+            var selectedCompany = _context.CompanyModel
+                .Include(c => c.User)
+                .FirstOrDefault(c => c.Id == companyId.Value);
+
+            if (selectedCompany?.User != null)
+            {
+                if (selectedCompany.LogoImage != null)
+                    logoBase64 = $"data:image/png;base64,{Convert.ToBase64String(selectedCompany.LogoImage)}";
+
+                if (selectedCompany.User.OwnerImage != null)
+                    ownerBase64 = $"data:image/png;base64,{Convert.ToBase64String(selectedCompany.User.OwnerImage)}";
+
+                ownerName = selectedCompany.User.FullName;
+            }
+        }
+
+        var viewModel = new CustomerFeedbackViewModel
+        {
+            SelectedCompanyId = companyId,
+            LogoImageBase64 = logoBase64,
+            OwnerImageBase64 = ownerBase64,
+            OwnerName = ownerName,
+            Message = TempData["Message"] as string,
+            CustomerName = TempData["CustomerName"] as string
+        };
+
+        // Keep data for post or navigating back
+        TempData.Keep("SelectedCompanyId");
+        TempData.Keep("Message");
+        TempData.Keep("CustomerName");
+
+        return View(viewModel);
     }
+
 
     [HttpPost]
     public IActionResult ContactStep3(CustomerFeedbackViewModel model)
@@ -273,10 +341,10 @@ public class FeedbackController : Controller
 
             // Store the WhatsApp link in TempData to show on confirmation page
             TempData["WhatsAppLink"] = waLink;
-            TempData["TicketID"] = ticketID;
+            //TempData["TicketID"] = ticketID;
 
             //return Redirect(waLink);
-            return RedirectToAction("ContactConfirmation");
+            //return RedirectToAction("ContactConfirmation");
 
         }
         else
@@ -284,7 +352,9 @@ public class FeedbackController : Controller
             //return error
         }
 
-        TempData.Clear();
+        //TempData.Clear();
+        TempData["TicketID"] = ticketID;
+
 
         return RedirectToAction("ContactConfirmation");
     }

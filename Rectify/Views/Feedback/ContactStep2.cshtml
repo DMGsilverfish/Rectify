@@ -36,6 +36,12 @@
                 <input asp-for="CustomerName" class="form-control" required/>
                 <span asp-validation-for="CustomerName" class="text-danger"></span>
             </div>
+            <input type="hidden" name="LogoImageBase64" value="@Model.LogoImageBase64" />
+            <input type="hidden" name="OwnerImageBase64" value="@Model.OwnerImageBase64" />
+            <input type="hidden" name="OwnerName" value="@Model.OwnerName" />
+            <input type="hidden" name="SelectedCompanyId" value="@Model.SelectedCompanyId" />
+            <input type="hidden" name="Message" value="@Model.Message" />
+
             <button type="submit" class="btn btn-pink" style="margin-top: 20px; display: block; margin-left: auto; margin-right: auto;">Next</button>
         </form>
     </div>

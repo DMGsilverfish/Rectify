@@ -198,15 +198,15 @@ namespace Rectify.Controllers
             };
             var result = await userManager.CreateAsync(user, model.Password!);
 
-            int nextCompany = 1;
-            if (context.CustomerModel.Any())
-            {
-                nextCompany = context.CompanyModel.Max(c => c.Id) + 1;
-            }
+            //int nextCompany = 1;
+            //if (context.CustomerModel.Any())
+            //{
+            //    nextCompany = context.CompanyModel.Max(c => c.Id) + 1;
+            //}
 
             var company = new CompanyModel
             {
-                Id = nextCompany,
+                //Id = nextCompany,
                 CompanyName = model.CompanyName!,
                 City = model.City!,
                 BranchAddress = model.BranchAddress!,

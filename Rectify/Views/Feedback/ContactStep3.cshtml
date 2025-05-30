@@ -13,8 +13,22 @@
 
 <div class="container">
     <div class="box">
-        <h2>We will try Rectify this issue</h2>
-        <h2>Do you want to hear back?</h2>
+        @* Owner image and text *@
+        @if (!string.IsNullOrEmpty(Model.OwnerImageBase64))
+        {
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <img id="ownerImage" src="@Model.OwnerImageBase64" class="rounded-image" style="width: 80px; height: 80px;" />
+                <div>
+                    <h2>
+                        We will try Rectify this issue! How can we get back to you?
+                    </h2>
+                </div>
+            </div>
+        }
+        else
+        {
+            <h2>We will try Rectify this issue! How can we get back to you?</h2>
+        }
         <form asp-action="ContactStep3" method="post">
             <div class="form-group">
                 <label asp-for="Email">Email: (optional)</label>
@@ -27,6 +41,14 @@
                 <input asp-for="PhoneNumber" class="form-control" autocomplete="tel"/>
                 <span asp-validation-for="PhoneNumber" class="text-danger"></span>
             </div>
+
+            <input type="hidden" name="LogoImageBase64" value="@Model.LogoImageBase64" />
+            <input type="hidden" name="OwnerImageBase64" value="@Model.OwnerImageBase64" />
+            <input type="hidden" name="OwnerName" value="@Model.OwnerName" />
+            <input type="hidden" name="SelectedCompanyId" value="@Model.SelectedCompanyId" />
+            <input type="hidden" name="Message" value="@Model.Message" />
+            <input type="hidden" name="CustomerName" value="@Model.CustomerName" />
+
 
             <button type="submit" class="btn btn-pink" style="margin-top: 20px; display: block; margin-left: auto; margin-right: auto;">Submit Feedback</button>
         </form>

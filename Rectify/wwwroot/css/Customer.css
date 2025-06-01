@@ -22,6 +22,7 @@
     max-width: 500px;
     width: 100%;
     margin: 0 1rem;
+    font-family: 'Times New Roman';
 }
 
 select,
@@ -115,6 +116,7 @@ select.form-control,
 .light-green-bg {
     background-color: #D9EFD0; /* Light green */
 }
+
 
 
 

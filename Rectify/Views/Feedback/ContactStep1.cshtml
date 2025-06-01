@@ -42,7 +42,12 @@
             <input type="hidden" name="OwnerName" value="@Model.OwnerName" />
             <input type="hidden" name="SelectedCompanyId" value="@Model.SelectedCompanyId" />
 
-            <button type="submit" class="btn btn-pink" style="margin-top: 20px; display: block; margin-left: auto; margin-right: auto;">Next</button>
+            <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+                <button type="submit" name="back" value="true" class="btn btn-pink" formnovalidate>Back</button>
+                <button type="submit" class="btn btn-pink">Next</button>
+
+            </div>
+
         </form>
     </div>
 </div>

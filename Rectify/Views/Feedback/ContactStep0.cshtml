@@ -42,20 +42,18 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
-        $(document).ready(function () {
+                $(document).ready(function () {
             $('.select2').select2({
                 placeholder: "Select or search company and branch",
                 allowClear: true
             });
 
-            $('#companyBranchSelect').change(function () {
-                var selectedUserId = $(this).val();
-
-                if (selectedUserId) {
+            function loadImages(companyId) {
+                if (companyId) {
                     $.ajax({
                         url: '@Url.Action("GetCompanyImages", "Home")',
                         type: 'GET',
-                        data: { companyID: selectedUserId },
+                        data: { companyID: companyId },
                         success: function (data) {
                             if (data.logoImageBase64) {
                                 $('#companyLogo').attr('src', data.logoImageBase64);
@@ -79,7 +77,20 @@
                     $('#logoContainer').hide();
                     $('#ownerImageContainer').hide();
                 }
+            }
+
+            // On selection change
+            $('#companyBranchSelect').change(function () {
+                var selectedUserId = $(this).val();
+                loadImages(selectedUserId);
             });
+
+            // On page load, check if there's already a selected company
+            var initialCompanyId = $('#companyBranchSelect').val();
+            if (initialCompanyId) {
+                loadImages(initialCompanyId);
+            }
         });
+
     </script>
 }

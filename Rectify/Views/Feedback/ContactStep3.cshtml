@@ -20,7 +20,7 @@
                 <img id="ownerImage" src="@Model.OwnerImageBase64" class="rounded-image" style="width: 80px; height: 80px;" />
                 <div>
                     <h2>
-                        We will try Rectify this issue! How can we get back to you?
+                        How can we reach you?
                     </h2>
                 </div>
             </div>
@@ -50,7 +50,11 @@
             <input type="hidden" name="CustomerName" value="@Model.CustomerName" />
 
 
-            <button type="submit" class="btn btn-pink" style="margin-top: 20px; display: block; margin-left: auto; margin-right: auto;">Submit Feedback</button>
+            <div style="display: flex; justify-content: center; gap: 20px; margin-top: 20px;">
+                <button type="submit" name="back" value="true" class="btn btn-pink" formnovalidate>Back</button>
+                <button type="submit" class="btn btn-pink">Submit Feedback</button>
+
+            </div>
         </form>
     </div>
 </div>

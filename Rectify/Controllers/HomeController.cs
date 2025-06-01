@@ -42,6 +42,7 @@ namespace Rectify.Controllers
 
         public IActionResult Index()
         {
+            TempData.Clear();
             return View();
         }
 

@@ -26,7 +26,7 @@ public class FeedbackController : Controller
     [HttpGet]
     public IActionResult ContactStep0()
     {
-        TempData.Clear();
+        
         var companies = _context.CompanyModel
             .Include(c => c.User)
             .OrderBy(c => c.CompanyName)
@@ -40,6 +40,12 @@ public class FeedbackController : Controller
         {
             CompanyBranchOptions = companies
         };
+
+        if (TempData.ContainsKey("SelectedCompanyId"))
+        {
+            viewModel.SelectedCompanyId = (int?)TempData["SelectedCompanyId"];
+            TempData.Keep("SelectedCompanyId");
+        }
 
         return View(viewModel);
     }
@@ -68,6 +74,11 @@ public class FeedbackController : Controller
     {
         //https://localhost:7192/Feedback/ContactStep1?companyId=5
 
+        // First, try TempData if companyId isn't passed via query
+        if (!companyId.HasValue && TempData.ContainsKey("SelectedCompanyId"))
+        {
+            companyId = (int?)TempData["SelectedCompanyId"];
+        }
 
         var companies = _context.CompanyModel
                 .Include(c => c.User) // Assuming navigation property exists
@@ -109,9 +120,14 @@ public class FeedbackController : Controller
             SelectedCompanyId = companyId,
             LogoImageBase64 = logoBase64,
             OwnerImageBase64 = ownerBase64,
-            OwnerName = ownername
+            OwnerName = ownername,
+            Message = TempData["Message"] as string
 
         };
+
+        TempData.Keep("SelectedCompanyId");
+        TempData.Keep("Message");
+        TempData.Keep("OwnerName");
 
         return View(viewModel);
     }
@@ -119,6 +135,21 @@ public class FeedbackController : Controller
     [HttpPost]
     public IActionResult ContactStep1(CustomerFeedbackViewModel model)
     {
+
+        // If Back button was clicked, skip validation
+        if (Request.Form["back"] == "true")
+        {
+            TempData["SelectedCompanyId"] = model.SelectedCompanyId;
+            TempData["Message"] = model.Message;
+            TempData["OwnerName"] = model.OwnerName;
+            
+            return RedirectToAction("ContactStep0");
+        }
+        else
+        {
+            TempData.Clear();
+        }
+
         if (!ModelState.IsValid)
         {
             model.CompanyBranchOptions = _context.CompanyModel
@@ -132,6 +163,8 @@ public class FeedbackController : Controller
 
         TempData["SelectedCompanyId"] = model.SelectedCompanyId;
         TempData["Message"] = model.Message;
+
+        
         //TempData.Keep("OwnerImageBase64");
         return RedirectToAction("ContactStep2");
     }
@@ -168,12 +201,15 @@ public class FeedbackController : Controller
             LogoImageBase64 = logoBase64,
             OwnerImageBase64 = ownerBase64,
             OwnerName = ownerName,
-            Message = TempData["Message"] as string
+            Message = TempData["Message"] as string,
+            CustomerName = TempData["CustomerName"] as string
         };
 
         // Keep for the next step or if the user goes back
         TempData.Keep("SelectedCompanyId");
         TempData.Keep("Message");
+        TempData.Keep("CustomerName");
+        TempData.Keep("OwnerName");
 
         return View(viewModel);
     }
@@ -181,6 +217,16 @@ public class FeedbackController : Controller
     [HttpPost]
     public IActionResult ContactStep2(CustomerFeedbackViewModel model)
     {
+
+        // If Back button was clicked, skip validation
+        if (Request.Form["back"] == "true")
+        {
+            TempData["SelectedCompanyId"] = model.SelectedCompanyId;
+            TempData["Message"] = model.Message;
+            TempData["OwnerName"] = model.OwnerName;
+
+            return RedirectToAction("ContactStep1");
+        }
 
         // No validation required since name is optional
         TempData["CustomerName"] = model.CustomerName;
@@ -239,6 +285,16 @@ public class FeedbackController : Controller
     public IActionResult ContactStep3(CustomerFeedbackViewModel model)
     {
         // Email and phone are optional, no need for ModelState check
+
+        if (Request.Form["back"] == "true")
+        {
+            TempData["SelectedCompanyId"] = model.SelectedCompanyId;
+            TempData["Message"] = model.Message;
+            TempData["OwnerName"] = model.OwnerName;
+            TempData["CustomerName"] = model.CustomerName;
+
+            return RedirectToAction("ContactStep2");
+        }
 
         int companyId = (int)TempData["SelectedCompanyId"]!;
         string message = TempData["Message"]!.ToString()!;

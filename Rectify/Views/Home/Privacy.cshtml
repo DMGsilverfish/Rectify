@@ -82,7 +82,13 @@
                 object-fit: cover;
             }
 
-
+        .sticky-header thead th {
+            position: sticky;
+            top: 0;
+            background-color: #ff1493;
+            color: white;
+            z-index: 1; /* ensures the header is above body rows */
+        }
 
     </style>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
@@ -180,44 +186,48 @@
 
     </div>
 
-    <table class="table table-bordered">
-        <thead style="background-color: #ff1493; color: white;">
-            <tr>
-                <th>Ticket ID</th>
-                @if (Model.ShowCompanyInfo)
-                {
-                    <th>Company</th>
-                    <th>Branch/Address</th>
-                }
-                <th class="d-none d-md-table-cell">Date</th>
-                <th>Status</th>
-                <th>Message</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody id="ticketTableBody">
-            @foreach (var ticket in Model.Tickets)
-            {
+    <div style="max-height: calc(8 * 3.5rem); overflow-y: auto;">
+        <table class="table table-bordered mb-0 sticky-header">
+            <thead>
                 <tr>
-                    <td>@ticket.TicketID</td>
+                    <th>Ticket ID</th>
                     @if (Model.ShowCompanyInfo)
                     {
-                        <td>@ticket.CompanyName</td>
-                        <td>@ticket.BranchAddress</td>
+                        <th>Company</th>
+                        <th>Branch/Address</th>
                     }
-                    <td class="d-none d-md-table-cell">@ticket.DateOfMessage.ToShortDateString()</td>
-                    <td>@ticket.Status</td>
-                    <td>@ticket.Message</td>
-                    <td>
-                        <button class="btn btn-outline-pink btn-sm"
-                                onclick="openStatusModal('@ticket.TicketID', '@ticket.Status')">
-                            Edit
-                        </button>
-                    </td>
+                    <th class="d-none d-md-table-cell">Date</th>
+                    <th>Status</th>
+                    <th>Message</th>
+                    <th>Actions</th>
                 </tr>
-            }
-        </tbody>
-    </table>
+            </thead>
+            <tbody id="ticketTableBody">
+                @foreach (var ticket in Model.Tickets)
+                {
+                    <tr>
+                        <td>@ticket.TicketID</td>
+                        @if (Model.ShowCompanyInfo)
+                        {
+                            <td>@ticket.CompanyName</td>
+                            <td>@ticket.BranchAddress</td>
+                        }
+                        <td class="d-none d-md-table-cell">@ticket.DateOfMessage.ToShortDateString()</td>
+                        <td>@ticket.Status</td>
+                        <td>@ticket.Message</td>
+                        <td>
+                            <button class="btn btn-outline-pink btn-sm"
+                                    onclick="openStatusModal('@ticket.TicketID', '@ticket.Status')">
+                                Edit
+                            </button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+
 
 </div>
 

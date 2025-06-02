@@ -25,12 +25,12 @@ namespace Rectify.Models.ViewModels
         
         [StringLength(40, MinimumLength = 8)]
         [DataType(DataType.Password)]
-        [Compare("ConfirmPassword")]
         public string ? Password { get; set; }
 
         
         [DataType(DataType.Password)]
         [Display(Name = "Confirm Password")]
+        [Compare("Password", ErrorMessage = "Passwords do not match.")]
         public string? ConfirmPassword { get; set; }
 
         // Step 2

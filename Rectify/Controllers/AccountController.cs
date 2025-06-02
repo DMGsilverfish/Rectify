@@ -16,13 +16,15 @@ namespace Rectify.Controllers
         private readonly UserManager<ApplicationUser> userManager;
         private readonly ApplicationDbContext context;
         private readonly IConfiguration configuration;
+        private readonly IPasswordValidator<ApplicationUser> passwordValidator;
 
-        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ApplicationDbContext context, IConfiguration configuration)
+        public AccountController(SignInManager<ApplicationUser> signInManager, UserManager<ApplicationUser> userManager, ApplicationDbContext context, IConfiguration configuration, IPasswordValidator<ApplicationUser> passwordValidator)
         {
             this.signInManager = signInManager;
             this.userManager = userManager;
             this.context = context;
             this.configuration = configuration;
+            this.passwordValidator = passwordValidator;
         }
 
         public IActionResult Login()
@@ -130,18 +132,30 @@ namespace Rectify.Controllers
         }
 
         [HttpPost]
-        public IActionResult Register(CompanyRegisterViewModel model)
+        public async Task<IActionResult> Register(CompanyRegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(model);
+
+            // Validate password with Identity rules
+            var dummyUser = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            var passwordValidationResult = await passwordValidator.ValidateAsync(userManager, dummyUser, model.Password!);
+
+            if (!passwordValidationResult.Succeeded)
             {
-                // Store Step 1 data in TempData (as JSON)
-                TempData["RegisterData"] = JsonSerializer.Serialize(model);
-                TempData.Keep("RegisterData");
-                return RedirectToAction("RegisterNext");
+                foreach (var error in passwordValidationResult.Errors)
+                {
+                    ModelState.AddModelError("Password", error.Description);
+                }
+                return View(model);
             }
 
-            return View(model);
+            // Store Step 1 data
+            TempData["RegisterData"] = JsonSerializer.Serialize(model);
+            TempData.Keep("RegisterData");
+            return RedirectToAction("RegisterNext");
         }
+
 
         public IActionResult RegisterNext()
         {

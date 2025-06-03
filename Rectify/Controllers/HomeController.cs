@@ -65,6 +65,7 @@ namespace Rectify.Controllers
                                     join c in context.CustomerModel on t.TicketID equals c.TicketID
                                     join comp in context.CompanyModel on t.CompanyID equals comp.Id
                                     where companyIds.Contains(t.CompanyID)
+                                    where t.Status != "Closed"
                                     select new TicketDisplayModel
                                     {
                                         TicketID = t.TicketID,

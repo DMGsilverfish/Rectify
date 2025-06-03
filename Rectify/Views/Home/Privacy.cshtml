@@ -143,47 +143,54 @@
 }
 
 <div class="container">
-    <div class="row mb-3">
-        <div class="col-md-3">
-            <label>Start Date:</label>
-            <input type="date" id="startDate" class="form-control" />
-        </div>
-        <div class="col-md-3">
-            <label>End Date:</label>
-            <input type="date" id="endDate" class="form-control" />
-        </div>
-        <div class="col-md-3">
-            <label>Sort by:</label>
-            <select id="sortOrder" class="form-control">
-                <option value="asc">Oldest First</option>
-                <option value="desc">Newest First</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label>Status:</label>
-            <div class="border rounded p-2">
-                <div class="form-check">
-                    <input class="form-check-input status-filter" type="checkbox" value="Open" id="statusOpen" checked>
-                    <label class="form-check-label" for="statusOpen">Open</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input status-filter" type="checkbox" value="Pending" id="statusPending" checked>
-                    <label class="form-check-label" for="statusPending">Pending</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input status-filter" type="checkbox" value="Closed" id="statusClosed">
-                    <label class="form-check-label" for="statusClosed">Closed</label>
+    <!-- Toggle Button -->
+    <div class="mb-3">
+        <button class="btn btn-secondary" type="button" onclick="toggleFilterPanel(this)">
+            <i class="bi bi-funnel-fill me-2"></i> Show Filters
+        </button>
+    </div>
+
+    <!-- Collapsible Filter Panel -->
+    <div class="collapse" id="filterPanel">
+        <div class="row mb-3">
+            <div class="col-md-3">
+                <label>Start Date:</label>
+                <input type="date" id="startDate" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label>End Date:</label>
+                <input type="date" id="endDate" class="form-control" />
+            </div>
+            <div class="col-md-3">
+                <label>Sort by:</label>
+                <select id="sortOrder" class="form-control">
+                    <option value="asc">Oldest First</option>
+                    <option value="desc">Newest First</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label>Status:</label>
+                <div class="border rounded p-2">
+                    <div class="form-check">
+                        <input class="form-check-input status-filter" type="checkbox" value="Open" id="statusOpen" checked>
+                        <label class="form-check-label" for="statusOpen">Open</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input status-filter" type="checkbox" value="Pending" id="statusPending" checked>
+                        <label class="form-check-label" for="statusPending">Pending</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input status-filter" type="checkbox" value="Closed" id="statusClosed">
+                        <label class="form-check-label" for="statusClosed">Closed</label>
+                    </div>
                 </div>
             </div>
+            <div class="col-md-3 d-flex align-items-end">
+                <button class="btn btn-primary w-100" onclick="applyTicketFilters()">
+                    <i class="bi bi-funnel-fill me-2"></i> Filter
+                </button>
+            </div>
         </div>
-
-
-        <div class="col-md-3 d-flex align-items-end">
-            <button class="btn btn-primary w-100" onclick="applyTicketFilters()">
-                <i class="bi bi-funnel-fill me-2"></i> Filter
-            </button>
-        </div>
-
     </div>
 
     <div style="max-height: calc(8 * 3.5rem); overflow-y: auto;">
@@ -429,51 +436,64 @@
 
 
             function applyTicketFilters() {
-                const startDate = document.getElementById("startDate").value;
-                const endDate = document.getElementById("endDate").value;
-                const sortOrder = document.getElementById("sortOrder").value;
+        const startDate = document.getElementById("startDate").value;
+        const endDate = document.getElementById("endDate").value;
+        const sortOrder = document.getElementById("sortOrder").value;
 
-                const showCompanyInfo = @Model.ShowCompanyInfo.ToString().ToLower(); // true/false
+        const showCompanyInfo = @Model.ShowCompanyInfo.ToString().ToLower(); // Razor injects true/false
 
-                const selectedStatuses = Array.from(document.querySelectorAll('.status-filter:checked'))
-                        .map(cb => cb.value);
+        const selectedStatuses = Array.from(document.querySelectorAll('.status-filter:checked'))
+            .map(cb => cb.value);
 
-                const statusParams = selectedStatuses.map(s => `statuses=${encodeURIComponent(s)}`).join('&');
-                const url = `/Home/FilterTickets?startDate=${startDate}&endDate=${endDate}&sortOrder=${sortOrder}&${statusParams}`;
+        const statusParams = selectedStatuses.map(s => `statuses=${encodeURIComponent(s)}`).join('&');
+        const url = `/Home/FilterTickets?startDate=${startDate}&endDate=${endDate}&sortOrder=${sortOrder}&${statusParams}`;
 
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const tbody = document.getElementById("ticketTableBody");
+                tbody.innerHTML = ""; // Clear table
 
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        const tbody = document.getElementById("ticketTableBody");
-                        tbody.innerHTML = ""; // Clear table
+                data.forEach(ticket => {
+                    const row = document.createElement("tr");
+                    const dateOnly = new Date(ticket.dateOfMessage).toLocaleDateString();
 
-                        data.forEach(ticket => {
-                            const row = document.createElement("tr");
+                    row.innerHTML = `
+                        <td>${ticket.ticketID}</td>
+                        ${showCompanyInfo ? `<td>${ticket.companyName || ''}</td><td>${ticket.branchAddress || ''}</td>` : ''}
+                        <td class="d-none d-md-table-cell">${dateOnly}</td>
+                        <td>${ticket.status}</td>
+                        <td>${ticket.message}</td>
+                        <td>
+                            <button class="btn btn-outline-pink btn-sm"
+                                    onclick="openStatusModal('${ticket.ticketID}', '${ticket.status}')">
+                                Edit
+                            </button>
+                        </td>
+                    `;
 
-                            const dateOnly = new Date(ticket.dateOfMessage).toLocaleDateString(); // Short date
+                    tbody.appendChild(row);
+                });
 
-                            row.innerHTML = `
-                                <td>${ticket.ticketID}</td>
-                                ${showCompanyInfo ? `<td>${ticket.companyName || ''}</td><td>${ticket.branchAddress || ''}</td>` : ''}
-                                <td class="d-none d-md-table-cell">${dateOnly}</td>
-                                <td>${ticket.status}</td>
-                                <td>${ticket.message}</td>
-                                <td>
-                                    <button class="btn btn-outline-pink btn-sm"
-                                            onclick="openStatusModal('${ticket.ticketID}', '${ticket.status}')">
-                                        Edit
-                                    </button>
-                                </td>
-                            `;
+                // Close the filter panel after applying
+                const panel = document.getElementById('filterPanel');
+                if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+                    const bsCollapse = bootstrap.Collapse.getOrCreateInstance(panel);
+                    bsCollapse.hide();
+                } else {
+                    panel.style.display = 'none';
+                }
 
-                            tbody.appendChild(row);
-                        });
-                    })
-                    .catch(error => {
-                        console.error("Error filtering tickets:", error);
-                    });
-            }
+                // Reset toggle button text
+                const toggleButton = document.querySelector('button[onclick^="toggleFilterPanel"]');
+                if (toggleButton) {
+                    toggleButton.innerHTML = `<i class="bi bi-funnel-fill me-2"></i> Show Filters`;
+                }
+            })
+            .catch(error => {
+                console.error("Error filtering tickets:", error);
+            });
+    }
 
 
     //status changing area
@@ -531,6 +551,24 @@
             document.getElementById('ticketHeader')?.classList.add('mobile-stack');
         }
     });
+
+    function toggleFilterPanel(button) {
+        const panel = document.getElementById('filterPanel');
+
+        // Try Bootstrap collapse if available
+        if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
+            const bsCollapse = bootstrap.Collapse.getOrCreateInstance(panel);
+            bsCollapse.toggle();
+
+            const isShown = panel.classList.contains('show');
+            button.innerHTML = `<i class="bi bi-funnel-fill me-2"></i> ${isShown ? 'Show' : 'Hide'} Filters`;
+        } else {
+            // Fallback to manual show/hide
+            const isHidden = panel.style.display === 'none' || panel.style.display === '';
+            panel.style.display = isHidden ? 'block' : 'none';
+            button.innerHTML = `<i class="bi bi-funnel-fill me-2"></i> ${isHidden ? 'Hide' : 'Show'} Filters`;
+        }
+    }
 
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

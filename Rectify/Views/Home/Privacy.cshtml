@@ -102,16 +102,36 @@
         <h2 class="mb-2 mb-md-0">Your Tickets</h2>
     </div>
 
-    <div id="ticketButtons" class="d-flex flex-wrap gap-2 justify-content-end">
+    <!-- Desktop version (unchanged layout) -->
+    <div id="ticketButtons" class="d-none d-md-flex flex-wrap gap-2 justify-content-end">
         <a class="btn btn-pink" aria-current="page" href="#">Tickets</a>
-        <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a>
-        @* <button type="button" class="btn btn-outline-pink" onclick="handleEditCompany('@Model.User.Id')">Edit Company Details</button> *@
+        <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id })">Edit Details</a>
         <a class="btn btn-outline-pink" href="@Url.Action("Reports", "Home")">Report</a>
         <button class="btn btn-outline-pink" id="qr-btn" data-bs-toggle="modal"
                 onclick="handleQrCodeCompanySelect('@Model.User.Id')">
             <i class="bi bi-qr-code"></i> QR Code
         </button>
     </div>
+
+    <!-- Mobile version (2x2 layout) -->
+    <div id="ticketButtonsMobile" class="d-md-none row g-2">
+        <div class="col-6">
+            <a class="btn btn-pink w-100" href="#">Tickets</a>
+        </div>
+        <div class="col-6">
+            <a class="btn btn-outline-pink w-100" href="@Url.Action("EditDetails", "Home", new { userId = id })">Edit Details</a>
+        </div>
+        <div class="col-6">
+            <a class="btn btn-outline-pink w-100" href="@Url.Action("Reports", "Home")">Report</a>
+        </div>
+        <div class="col-6">
+            <button class="btn btn-outline-pink w-100" data-bs-toggle="modal"
+                    onclick="handleQrCodeCompanySelect('@Model.User.Id')">
+                <i class="bi bi-qr-code"></i> QR Code
+            </button>
+        </div>
+    </div>
+
 </div>
 
 
@@ -552,23 +572,35 @@
         }
     });
 
-    function toggleFilterPanel(button) {
+        function toggleFilterPanel(button) {
         const panel = document.getElementById('filterPanel');
 
-        // Try Bootstrap collapse if available
         if (typeof bootstrap !== 'undefined' && bootstrap.Collapse) {
             const bsCollapse = bootstrap.Collapse.getOrCreateInstance(panel);
             bsCollapse.toggle();
 
-            const isShown = panel.classList.contains('show');
-            button.innerHTML = `<i class="bi bi-funnel-fill me-2"></i> ${isShown ? 'Show' : 'Hide'} Filters`;
+            // Remove any existing listeners to prevent duplicates
+            panel.removeEventListener('shown.bs.collapse', panel._onShown);
+            panel.removeEventListener('hidden.bs.collapse', panel._onHidden);
+
+            // Define and attach new listeners
+            panel._onShown = () => {
+                button.innerHTML = `<i class="bi bi-funnel-fill me-2"></i> Hide Filters`;
+            };
+            panel._onHidden = () => {
+                button.innerHTML = `<i class="bi bi-funnel-fill me-2"></i> Show Filters`;
+            };
+
+            panel.addEventListener('shown.bs.collapse', panel._onShown);
+            panel.addEventListener('hidden.bs.collapse', panel._onHidden);
         } else {
-            // Fallback to manual show/hide
+            // Manual fallback
             const isHidden = panel.style.display === 'none' || panel.style.display === '';
             panel.style.display = isHidden ? 'block' : 'none';
             button.innerHTML = `<i class="bi bi-funnel-fill me-2"></i> ${isHidden ? 'Hide' : 'Show'} Filters`;
         }
     }
+
 
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

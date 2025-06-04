@@ -180,20 +180,34 @@
         <h2 class="mb-2 mb-md-0">Your Reports</h2>
     </div>
 
-    <div id="ticketButtons" class="d-flex flex-wrap gap-2 justify-content-end">
+    <div id="ticketButtons" class="d-none d-md-flex flex-wrap gap-2 justify-content-end">
         <a class="btn btn-outline-pink" href="@Url.Action("Privacy", "Home")">Tickets</a>
-        <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id})">Edit Details</a>
-        <button type="button" class="btn btn-outline-pink" onclick="handleEditCompany('@Model.UserId')">
-            Edit Company Details
-        </button>
+        <a class="btn btn-outline-pink" href="@Url.Action("EditDetails", "Home", new { userId = id })">Edit Details</a>
         <a class="btn btn-pink" aria-current="page" href="@Url.Action("Reports", "Home")">Report</a>
         <button class="btn btn-outline-pink" id="qr-btn" data-bs-toggle="modal"
                 onclick="handleQrCodeCompanySelect('@Model.UserId')">
             <i class="bi bi-qr-code"></i> QR Code
         </button>
-
-
     </div>
+
+    <div id="ticketButtonsMobile" class="d-md-none row g-2">
+        <div class="col-6">
+            <a class="btn btn-outline-pink w-100" href="@Url.Action("Privacy", "Home")">Tickets</a>
+        </div>
+        <div class="col-6">
+            <a class="btn btn-outline-pink w-100" href="@Url.Action("EditDetails", "Home", new { userId = id })">Edit Details</a>
+        </div>
+        <div class="col-6">
+            <a class="btn btn-pink w-100" href="@Url.Action("Reports", "Home")">Report</a>
+        </div>
+        <div class="col-6">
+            <button class="btn btn-outline-pink w-100" id="qr-btn-mobile" data-bs-toggle="modal"
+                    onclick="handleQrCodeCompanySelect('@Model.UserId')">
+                <i class="bi bi-qr-code"></i> QR Code
+            </button>
+        </div>
+    </div>
+
 </div>
 
 

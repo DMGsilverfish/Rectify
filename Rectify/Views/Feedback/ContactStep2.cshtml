@@ -20,20 +20,20 @@
                 <img id="ownerImage" src="@Model.OwnerImageBase64" class="rounded-image" style="width: 80px; height: 80px;" />
                 <div>
                     <h2>
-                        Nice to meet you, could you please introduce yourself
+                        Nice to meet you!
                     </h2>
                 </div>
             </div>
         }
         else
         {
-            <h2>Nice to meet you, could you please introduce yourself</h2>
+            <h2>Nice to meet you!</h2>
         }
 
         <form asp-action="ContactStep2" method="post">
             <div class="form-group">
                 <label asp-for="CustomerName">Fullname:</label>
-                <input asp-for="CustomerName" class="form-control" required/>
+                <input asp-for="CustomerName" class="form-control" placeholder="Fullname" required/>
                 <span asp-validation-for="CustomerName" class="text-danger"></span>
             </div>
             <input type="hidden" name="LogoImageBase64" value="@Model.LogoImageBase64" />

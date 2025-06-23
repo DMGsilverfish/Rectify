@@ -42,6 +42,12 @@ namespace Rectify.Controllers
 
         public IActionResult Index()
         {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                // Redirect to the Privacy page if the user is authenticated
+                return RedirectToAction("Privacy");
+            }
+
             TempData.Clear();
             return View();
         }
@@ -687,6 +693,14 @@ namespace Rectify.Controllers
         {
             return View();
         }
+
+        
+        public IActionResult Account()
+        {
+            return View();
+        }
+
+        
 
     }
 }

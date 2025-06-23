@@ -1,0 +1,28 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+    ViewData["Title"] = "Account";
+    Layout = "_Layout";
+}
+<head>
+    <link rel="stylesheet" href="~/css/Customer.css" asp-append-version="true" />
+
+</head>
+
+<div class="account-container">
+    <div class="account-box">
+        <h2 class="text-center mb-4">Do you have an account?</h2>
+
+        <form asp-action="Account" asp-controller="Home" method="post" class="text-center">
+            <button type="button" class="btn btn-outline-pink m-2" onclick="location.href='@Url.Action("Login", "Account")'">Yes, I have an account</button>
+            <button type="button" class="btn btn-outline-pink m-2" onclick="location.href='@Url.Action("Register", "Account")'">No, I need to register</button>
+
+        </form>
+
+        <div class="text-center mt-3">
+            <a asp-controller="Home" asp-action="Index" class="text-decoration-none">Back</a>
+        </div>
+    </div>
+</div>
+

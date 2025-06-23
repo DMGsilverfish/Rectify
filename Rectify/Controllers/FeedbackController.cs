@@ -36,6 +36,12 @@ public class FeedbackController : Controller
                 Text = $"{c.CompanyName} - {c.BranchAddress}"
             }).ToList();
 
+        companies.Add(new SelectListItem
+        {
+            Value = "-1",
+            Text = "Other"
+        });
+
         var viewModel = new CustomerFeedbackViewModel
         {
             CompanyBranchOptions = companies

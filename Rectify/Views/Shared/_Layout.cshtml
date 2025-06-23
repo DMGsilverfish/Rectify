@@ -48,10 +48,7 @@
                             </li>
                         } else
                         {
-                            @* <li class="nav-item">
-                            <a class="nav-link @(currentAction == "Index" && currentController == "Home" ? "active" : "") text-dark"
-                               asp-controller="Home" asp-action="Index">Home</a>
-                        </li> *@
+                            
                             <li class="nav-item">
                                 <a class="nav-link @(currentAction == "ContactStep0" && currentController == "Feedback" ? "active" : "") text-dark"
                                    asp-controller="Feedback" asp-action="ContactStep0">Customer</a>
@@ -60,11 +57,13 @@
                                 <a class="nav-link @(currentAction == "Privacy" && currentController == "Home" ? "active" : "") text-dark"
                                    asp-controller="Home" asp-action="Privacy">Company</a>
                             </li>
-                            <li class="nav-item text-dark">
-                                About Us
+                            <li class="nav-item">
+                                <a class="nav-link @(currentAction == "AboutUs" && currentController == "Home" ? "active" : "") text-dark"
+                                   asp-controller="Home" asp-action="AboutUs">About Us</a>
                             </li>
-                            <li class="nav-item text-dark">
-                                Contact Us
+                            <li class="nav-item">
+                                <a class="nav-link @(currentAction == "ContactUs" && currentController == "Home" ? "active" : "") text-dark"
+                                   asp-controller="Home" asp-action="ContactUs">Contact Us</a>
                             </li>
                         }
 

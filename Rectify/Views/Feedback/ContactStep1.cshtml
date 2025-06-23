@@ -22,7 +22,7 @@
 
             <div>
                 <h2>
-                    Hi, <span style="color: #ff1493">@Model.OwnerName</span> here, let's rectify your experience
+                    Hi, <span style="color: #ff1493">@Model.OwnerName from @Model.CompanyName</span> here, let's rectify your experience
                 </h2>
                 <h2>What happened?</h2>
             </div>
@@ -31,7 +31,7 @@
 
             <div class="form-group" style="position: relative;">
                 <label asp-for="Message">Message:</label>
-                <textarea asp-for="Message" class="form-control light-green-bg" id="messageTextarea" required ></textarea>
+                <textarea asp-for="Message" class="form-control light-grey-bg" id="messageTextarea" required ></textarea>
                 <button type="button" title="Click to start/stop voice input" id="micBtn" style="position: absolute; right: 10px; top: 35px; border: none; background: none; cursor: pointer;">
                     🎤
                 </button>

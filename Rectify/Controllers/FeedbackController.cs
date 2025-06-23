@@ -99,6 +99,7 @@ public class FeedbackController : Controller
         string? logoBase64 = null;
         string? ownerBase64 = null;
         string? ownername = null;
+        string? companyName = null;
 
         if (companyId.HasValue)
         {
@@ -113,7 +114,9 @@ public class FeedbackController : Controller
 
                 if (selectedCompany.User.OwnerImage != null)
                     ownerBase64 = $"data:image/png;base64,{Convert.ToBase64String(selectedCompany.User.OwnerImage)}";
+                
                 ownername = selectedCompany.User.FullName;
+                companyName = selectedCompany.CompanyName;
             }
         }
 
@@ -127,6 +130,7 @@ public class FeedbackController : Controller
             LogoImageBase64 = logoBase64,
             OwnerImageBase64 = ownerBase64,
             OwnerName = ownername,
+            CompanyName = companyName,
             Message = TempData["Message"] as string
 
         };
@@ -134,6 +138,7 @@ public class FeedbackController : Controller
         TempData.Keep("SelectedCompanyId");
         TempData.Keep("Message");
         TempData.Keep("OwnerName");
+        
 
         return View(viewModel);
     }

@@ -226,8 +226,9 @@ namespace Rectify.Controllers
 
         [Authorize]
         [HttpGet]
-        public IActionResult EditDetails(string userId) //ApplicationUser ID
+        public IActionResult EditDetails() //ApplicationUser ID
         {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = context.Users.FirstOrDefault(u => u.Id == userId);
             if (user == null)
             {

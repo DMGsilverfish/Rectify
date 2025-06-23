@@ -1,4 +1,5 @@
-﻿@{
+﻿@using System.Security.Claims
+@{
     var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
     var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
 }
@@ -34,19 +35,27 @@
 
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <li class="nav-item text-dark">
-                                Messages
+                            <li class="nav-item">
+                                <a class="nav-link @(currentAction == "Privacy" && currentController == "Home" ? "active" : "") text-dark"
+                                   asp-controller="Home" asp-action="Privacy">Messages</a>
                             </li>
-                            <li class="nav-item text-dark">
-                                Edit Details
+                            <li class="nav-item">
+                                <a class="nav-link @(currentAction == "EditDetails" && currentController == "Home" ? "active" : "") text-dark"
+                                   asp-controller="Home" asp-action="EditDetails">Edit Details</a>
                             </li>
-                            <li class="nav-item text-dark">
-                                Report
+                            <li class="nav-item">
+                                <a class="nav-link @(currentAction == "Reports" && currentController == "Home" ? "active" : "") text-dark"
+                                   asp-controller="Home" asp-action="Reports">Report</a>
                             </li>
-                            <li class="nav-item text-dark">
+                            
+                                <button class="nav-link btn btn-link text-dark p-0"
+                                    type="button"
+                                    onclick="handleQrCodeCompanySelect('@User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier)')">
                                 QR Code
-                            </li>
-                        } else
+                                </button>
+                            
+                        }
+                        else
                         {
                             
                             <li class="nav-item">
@@ -93,6 +102,100 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
+    <!--for admins-->
+
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!--Modal section-->
+    <!-- QR Code Modal -->
+    <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content text-center">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="qrModalLabel">Company QR Code</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <img id="qrCodeImage" src="" alt="QR Code" class="img-fluid" />
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-outline-pink" onclick="copyQrLink()">Copy Link</button>
+                    <button class="btn-outline-pink" id="saveQrBtn">Save Image</button>
+                    <button class="btn btn-outline-pink" id="printQrBtn">Print QR Code</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Company Select Modal -->
+    <div class="modal fade" id="companySelectModal" tabindex="-1" aria-labelledby="companySelectModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Select a Company to Edit</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="company-list"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function handleQrCodeCompanySelect(userId) {
+            fetch(`/Home/GetUserCompanies?userId=${encodeURIComponent(userId)}`)
+                .then(res => res.json())
+                .then(companies => {
+                    if (companies.length === 1) {
+                        loadQrCode(companies[0].id); // Direct load
+                    } else if (companies.length > 1) {
+                        const container = document.getElementById("company-list");
+                        container.innerHTML = "";
+
+                        companies.forEach(company => {
+                            const btn = document.createElement("button");
+                            btn.className = "btn btn-outline-pink w-100 mb-2";
+                            btn.innerText = `${company.companyName} - ${company.branchAddress}`;
+                            btn.onclick = () => {
+                                const modal = bootstrap.Modal.getInstance(document.getElementById("companySelectModal"));
+                                modal.hide();
+                                loadQrCode(company.id);
+                            };
+                            container.appendChild(btn);
+                        });
+
+                        const modal = new bootstrap.Modal(document.getElementById("companySelectModal"));
+                        modal.show();
+                    } else {
+                        alert("No companies found for this user.");
+                    }
+                })
+                .catch(err => {
+                    console.error("Error fetching companies:", err);
+                    alert("Failed to load companies.");
+                });
+        }
+
+        let currentCompanyId = null;
+
+        function loadQrCode(companyId) {
+            currentCompanyId = companyId;
+            const baseUrl = window.location.origin;
+            const qrEncodedUrl = `${baseUrl}/Feedback/ContactStep1?companyId=${encodeURIComponent(companyId)}`;
+
+            const img = document.getElementById("qrCodeImage");
+            img.src = `/Home/GenerateQrCode?companyId=${encodeURIComponent(companyId)}&t=${Date.now()}`;
+
+            const qrModal = new bootstrap.Modal(document.getElementById("qrModal"));
+            qrModal.show();
+        }
+
+        function copyQrLink() {
+            const baseUrl = window.location.origin;
+            const qrEncodedUrl = `${baseUrl}/Feedback/ContactStep1?companyId=${encodeURIComponent(currentCompanyId)}`;
+            navigator.clipboard.writeText(qrEncodedUrl)
+                .then(() => alert("Link copied to clipboard"))
+                .catch(() => alert("Failed to copy link"));
+        }
+    </script>
+
 </body>
 </html>

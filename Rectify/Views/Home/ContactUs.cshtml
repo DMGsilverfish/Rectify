@@ -1,1 +1,34 @@
-﻿<h1>Contact Us page</h1>
+﻿@model Rectify.Models.ViewModels.ContactFormViewModel
+
+<head>
+    <link rel="stylesheet" href="~/css/Customer.css" asp-append-version="true" />
+</head>
+
+<div class="container">
+    <div class="box">
+        <h2>Need help?</h2>
+        <form asp-action="ContactUs" method="post">
+            <div class="form-group">
+                <label asp-for="FullName">Full Name</label>
+                <input asp-for="FullName" class="form-control" placeholder="Your full name" required />
+                <span asp-validation-for="FullName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email">Email</label>
+                <input asp-for="Email" class="form-control" placeholder="your@email.com" type="email" required />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Message">How can we help?</label>
+                <textarea asp-for="Message" class="form-control" placeholder="Type your message here..." rows="5" required></textarea>
+                <span asp-validation-for="Message" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-pink" style="margin-top: 20px; display: block; margin-left: auto; margin-right: auto;">
+                Send
+            </button>
+        </form>
+    </div>
+</div>

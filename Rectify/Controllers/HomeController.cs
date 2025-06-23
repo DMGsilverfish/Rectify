@@ -689,12 +689,33 @@ namespace Rectify.Controllers
             return View();
         }
 
+        [HttpGet]
         public IActionResult ContactUs()
         {
             return View();
         }
 
-        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult ContactUs(ContactFormViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                // Save input in variables (for now)
+                var fullName = model.FullName;
+                var email = model.Email;
+                var message = model.Message;
+
+                // You can later email this, store in DB, etc.
+
+                ViewBag.Message = "Your message was sent!";
+                ModelState.Clear(); // Optional: clear form after submit
+            }
+
+            return View();
+        }
+
+
         public IActionResult Account()
         {
             return View();

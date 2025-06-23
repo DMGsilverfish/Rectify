@@ -21,7 +21,9 @@
         </form>
 
         <div class="text-center mt-3">
-            <a asp-controller="Home" asp-action="Index" class="text-decoration-none">Back</a>
+            <button type="button" class="btn btn-outline-pink m-2" 
+                onclick="location.href='@Url.Action("Index", "Home")'">Back
+            </button>            
         </div>
     </div>
 </div>

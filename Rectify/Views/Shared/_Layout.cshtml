@@ -44,6 +44,10 @@
                                    asp-controller="Home" asp-action="EditDetails">Edit Details</a>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link @(currentAction == "AddCompany" && currentController == "Account" ? "active" : "") text-dark"
+                                   asp-controller="Account" asp-action="AddCompany">Add Company</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link @(currentAction == "Reports" && currentController == "Home" ? "active" : "") text-dark"
                                    asp-controller="Home" asp-action="Reports">Report</a>
                             </li>                           

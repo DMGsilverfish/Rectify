@@ -21,6 +21,8 @@ namespace Rectify.Models.ViewModels
 
         public string? OwnerName { get; set; }
 
+        public string? Contact { get; set; }
+
     }
 
 }

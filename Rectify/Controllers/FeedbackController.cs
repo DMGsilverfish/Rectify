@@ -332,15 +332,26 @@ public class FeedbackController : Controller
         //    nextCustomer = _context.CustomerModel.Max(c =>  c.Id) + 1;
         //}
 
-        var customer = new CustomerModel
+        string? contact = model.Contact;
+
+        if (!string.IsNullOrEmpty(contact) && contact.Contains('@'))
         {
-            //Id = nextCustomer,
-            CustomerName = customerName,
-            CustomerEmail = model.Email,
-            CustomerPhone = model.PhoneNumber,
-            Message = message,
-            TicketID = ticketID
-        };
+            model.Email = contact; // If contact is an email, set Email field
+        }
+        else if (!string.IsNullOrEmpty(contact) && contact.All(char.IsDigit))
+        {
+            model.PhoneNumber = contact; // Otherwise, set PhoneNumber field
+        }
+
+            var customer = new CustomerModel
+            {
+                //Id = nextCustomer,
+                CustomerName = customerName,
+                CustomerEmail = model.Email,
+                CustomerPhone = model.PhoneNumber,
+                Message = message,
+                TicketID = ticketID
+            };
 
         _context.TicketModel.Add(ticket);
         _context.CustomerModel.Add(customer);

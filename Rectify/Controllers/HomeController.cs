@@ -249,7 +249,7 @@ namespace Rectify.Controllers
                 g.Clear(Color.White);
 
                 // Draw top text
-                using var font = new Font("Arial", 16, FontStyle.Bold);
+                using var font = new Font("Arial", 35, FontStyle.Bold);
                 var topText = "SCAN TO BE HEARD";
                 var topSize = g.MeasureString(topText, font);
                 g.DrawString(topText, font, Brushes.Black, (width - topSize.Width) / 2, 5);

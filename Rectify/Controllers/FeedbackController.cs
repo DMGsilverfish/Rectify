@@ -71,12 +71,37 @@ public class FeedbackController : Controller
             return View(model);
         }
 
+        if (model.SelectedCompanyId == -1)
+        {
+            return RedirectToAction("ContactStepOther");
+        }
+
         return RedirectToAction("ContactStep1", new { companyId = model.SelectedCompanyId });
+    }
+
+    [HttpGet]
+    public IActionResult ContactStepOther()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public IActionResult ContactStepOther(CustomerFeedbackViewModel model)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+        // Save the "Other" company information to TempData
+        TempData["SelectedCompanyId"] = -1; // Indicating "Other"
+
+        TempData["CompanyName"] = model.CompanyName;
+        return RedirectToAction("ContactStep1", new { companyId = -1, companyName = model.CompanyName });
     }
 
 
     [HttpGet]
-    public IActionResult ContactStep1(int? companyId)
+    public IActionResult ContactStep1(int? companyId, string? companyName)
     {
         //https://localhost:7192/Feedback/ContactStep1?companyId=5
 
@@ -99,7 +124,7 @@ public class FeedbackController : Controller
         string? logoBase64 = null;
         string? ownerBase64 = null;
         string? ownername = null;
-        string? companyName = null;
+        
 
         if (companyId.HasValue)
         {
@@ -138,7 +163,8 @@ public class FeedbackController : Controller
         TempData.Keep("SelectedCompanyId");
         TempData.Keep("Message");
         TempData.Keep("OwnerName");
-        
+        TempData.Keep("CompanyName");
+
 
         return View(viewModel);
     }
@@ -146,7 +172,7 @@ public class FeedbackController : Controller
     [HttpPost]
     public IActionResult ContactStep1(CustomerFeedbackViewModel model)
     {
-
+        string? CompanyName = TempData["CompanyName"] as string;
         // If Back button was clicked, skip validation
         if (Request.Form["back"] == "true")
         {
@@ -160,6 +186,8 @@ public class FeedbackController : Controller
         {
             TempData.Clear();
         }
+
+        TempData["CompanyName"] = CompanyName;
 
         if (!ModelState.IsValid)
         {
@@ -176,7 +204,7 @@ public class FeedbackController : Controller
         TempData["Message"] = model.Message;
 
         
-        //TempData.Keep("OwnerImageBase64");
+        TempData.Keep("CompanyName");
         return RedirectToAction("ContactStep2");
     }
 
@@ -221,6 +249,7 @@ public class FeedbackController : Controller
         TempData.Keep("Message");
         TempData.Keep("CustomerName");
         TempData.Keep("OwnerName");
+        TempData.Keep("CompanyName");
 
         return View(viewModel);
     }
@@ -251,6 +280,8 @@ public class FeedbackController : Controller
     public IActionResult ContactStep3()
     {
         var companyId = TempData["SelectedCompanyId"] as int?;
+        string? customCompanyName = TempData["CompanyName"] as string;
+
         string? logoBase64 = null;
         string? ownerBase64 = null;
         string? ownerName = null;
@@ -280,13 +311,16 @@ public class FeedbackController : Controller
             OwnerImageBase64 = ownerBase64,
             OwnerName = ownerName,
             Message = TempData["Message"] as string,
-            CustomerName = TempData["CustomerName"] as string
+            CustomerName = TempData["CustomerName"] as string,
+            CompanyName = companyId == -1 ? customCompanyName : null
         };
 
         // Keep data for post or navigating back
         TempData.Keep("SelectedCompanyId");
         TempData.Keep("Message");
         TempData.Keep("CustomerName");
+        TempData.Keep("CompanyName");
+
 
         return View(viewModel);
     }
@@ -307,6 +341,8 @@ public class FeedbackController : Controller
             return RedirectToAction("ContactStep2");
         }
 
+        string? companyName = TempData["CompanyName"] as string;
+
         int companyId = (int)TempData["SelectedCompanyId"]!;
         string message = TempData["Message"]!.ToString()!;
         string? customerName = TempData["CustomerName"]?.ToString();
@@ -316,6 +352,28 @@ public class FeedbackController : Controller
         int ticketCountToday = _context.TicketModel.Count(t => t.DateOfMessage.Date == currentDate.Date);
         string ticketNumber = (ticketCountToday + 1).ToString("D5");
         string ticketID = $"{dateString}_{ticketNumber}";
+
+        if (companyId == -1) //if Other is selected
+        {
+            ViewBag.ShowProcessingPopup = true;
+
+            var viewModel = new CustomerFeedbackViewModel
+            {
+                SelectedCompanyId = companyId,
+                CompanyName = companyName,
+                Message = message,
+                CustomerName = customerName,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber
+            };
+
+            // Preserve for future use if needed
+            TempData.Keep("CompanyName");
+            TempData.Keep("CustomerName");
+            TempData.Keep("Message");
+
+            return View(viewModel); // Re-render the same ContactStep3 view
+        }
 
         var ticket = new TicketModel
         {

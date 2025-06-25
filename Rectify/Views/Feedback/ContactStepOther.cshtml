@@ -1,0 +1,83 @@
+﻿@using Rectify.Models.ViewModels
+@model CustomerFeedbackViewModel
+
+@{
+    ViewData["Title"] = "Select Company";
+    Layout = "_Layout";
+}
+
+<head>
+    <link rel="stylesheet" href="~/css/Customer.css" asp-append-version="true" />
+</head>
+
+<div class="container">
+    <div class="box">
+        <h2>Choose the company</h2>
+        <form asp-action="ContactStepOther" method="post">
+
+            <div class="form-group">
+                <label asp-for="CompanyName">Enter Company Name:</label>
+                <input asp-for="CompanyName" class="form-control" placeholder="Company name" required />
+                <span asp-validation-for="CompanyName" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-pink" style="margin-top: 20px; display: block; margin-left: auto; margin-right: auto;">Next</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+                $(document).ready(function () {
+            $('.select2').select2({
+                placeholder: "Select or search company and branch",
+                allowClear: true
+            });
+
+            function loadImages(companyId) {
+                if (companyId) {
+                    $.ajax({
+                        url: '@Url.Action("GetCompanyImages", "Home")',
+                        type: 'GET',
+                        data: { companyID: companyId },
+                        success: function (data) {
+                            if (data.logoImageBase64) {
+                                $('#companyLogo').attr('src', data.logoImageBase64);
+                                $('#logoContainer').show();
+                            } else {
+                                $('#logoContainer').hide();
+                            }
+
+                            if (data.ownerImageBase64) {
+                                $('#ownerImage').attr('src', data.ownerImageBase64);
+                                $('#ownerImageContainer').show();
+                            } else {
+                                $('#ownerImageContainer').hide();
+                            }
+                        },
+                        error: function () {
+                            console.error('Error fetching images.');
+                        }
+                    });
+                } else {
+                    $('#logoContainer').hide();
+                    $('#ownerImageContainer').hide();
+                }
+            }
+
+            // On selection change
+            $('#companyBranchSelect').change(function () {
+                var selectedUserId = $(this).val();
+                loadImages(selectedUserId);
+            });
+
+            // On page load, check if there's already a selected company
+            var initialCompanyId = $('#companyBranchSelect').val();
+            if (initialCompanyId) {
+                loadImages(initialCompanyId);
+            }
+        });
+
+    </script>
+}

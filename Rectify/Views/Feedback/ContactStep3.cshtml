@@ -55,4 +55,17 @@
 
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
+
+    <script>
+        window.addEventListener("DOMContentLoaded", function () {
+            const shouldShowPopup = '@(ViewBag.ShowProcessingPopup?.ToString().ToLower() ?? "false")';
+            if (shouldShowPopup === 'true') {
+                // Show popup - you can replace this with your actual React hook or modal trigger
+                alert("Thank you! Your request will be processed manually.");
+
+                // Optionally auto-redirect after a delay
+                // setTimeout(() => window.location.href = "/Home/Index", 3000);
+            }
+        });
+    </script>
 }

@@ -112,3 +112,25 @@ p {
     font-size: 1.6rem; /* keep your preferred size */
 }
 
+
+.qr-section-centered {
+    text-align: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.qr-wrapper {
+    margin: 25px auto;
+}
+
+    .qr-wrapper img {
+        max-width: 240px; /* was 200px, now 20% larger */
+        height: auto;
+    }
+
+.top-line, .bottom-line {
+    font-weight: bold;
+    font-size: 1.44em; /* was 1.2em, now 20% larger */
+    margin: 12px 0;
+}
+

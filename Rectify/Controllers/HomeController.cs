@@ -218,10 +218,6 @@ namespace Rectify.Controllers
             return File(output.ToArray(), "image/png","QRCode.png");
         }
 
-        
-
-
-
 
         [Authorize]
         public IActionResult PrintQRCode(string companyId)

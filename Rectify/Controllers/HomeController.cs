@@ -218,6 +218,71 @@ namespace Rectify.Controllers
             return File(output.ToArray(), "image/png","QRCode.png");
         }
 
+        [Authorize]
+        public IActionResult GenerateQrCodeWithText(string companyId)
+        {
+            if (string.IsNullOrEmpty(companyId))
+                return BadRequest("Company ID is missing.");
+
+            var url = Url.Action("ContactStep1", "Feedback", new { companyId }, protocol: Request.Scheme);
+            if (string.IsNullOrEmpty(url))
+                return BadRequest("Could not generate URL.");
+
+            using var qrGenerator = new QRCodeGenerator();
+            using var qrCodeData = qrGenerator.CreateQrCode(url, QRCodeGenerator.ECCLevel.Q);
+
+            var qrCode = new PngByteQRCode(qrCodeData);
+            var qrCodeBytes = qrCode.GetGraphic(20);
+
+            using var qrStream = new MemoryStream(qrCodeBytes);
+            using var originalQrBitmap = new Bitmap(qrStream);
+
+            int paddingTop = 50;
+            int paddingBottom = 50;
+            int totalHeight = originalQrBitmap.Height + paddingTop + paddingBottom;
+            int width = originalQrBitmap.Width;
+
+            using var fullBitmap = new Bitmap(width, totalHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            using (var g = Graphics.FromImage(fullBitmap))
+            {
+                g.Clear(Color.White);
+
+                // Draw top text
+                using var font = new Font("Arial", 16, FontStyle.Bold);
+                var topText = "SCAN TO BE HEARD";
+                var topSize = g.MeasureString(topText, font);
+                g.DrawString(topText, font, Brushes.Black, (width - topSize.Width) / 2, 5);
+
+                // Draw QR code image
+                g.DrawImage(originalQrBitmap, 0, paddingTop);
+
+                // Draw bottom text
+                var bottomText = "RECTIFY";
+                var bottomSize = g.MeasureString(bottomText, font);
+                g.DrawString(bottomText, font, Brushes.Black, (width - bottomSize.Width) / 2, originalQrBitmap.Height + paddingTop + 5);
+            }
+
+            // Load and overlay logo
+            string logoPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "images", "LogoPlaceholder.jpeg");
+            using var logo = new Bitmap(logoPath);
+            int logoSize = width / 5;
+            using var resizedLogo = new Bitmap(logo, new Size(logoSize, logoSize));
+
+            int logoX = (width - logoSize) / 2;
+            int logoY = paddingTop + (originalQrBitmap.Height - logoSize) / 2;
+
+            using (var g = Graphics.FromImage(fullBitmap))
+            {
+                g.DrawImage(resizedLogo, logoX, logoY, logoSize, logoSize);
+            }
+
+            using var output = new MemoryStream();
+            fullBitmap.Save(output, System.Drawing.Imaging.ImageFormat.Png);
+            return File(output.ToArray(), "image/png", "QRCode.png");
+        }
+
+
 
         [Authorize]
         public IActionResult PrintQRCode(string companyId)

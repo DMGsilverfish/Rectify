@@ -326,7 +326,7 @@
                 return;
             }
 
-            const url = `/Home/GenerateQrCode?companyId=${encodeURIComponent(currentCompanyId)}&download=true&t=${Date.now()}`;
+            const url = `/Home/GenerateQrCodeWithText?companyId=${encodeURIComponent(currentCompanyId)}&download=true&t=${Date.now()}`;
             const fileName = `QRCode_${currentCompanyId}.png`;
 
             // Create a temporary link and simulate click

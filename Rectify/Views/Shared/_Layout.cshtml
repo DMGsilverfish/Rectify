@@ -30,7 +30,7 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                    <ul class="navbar-nav flex-grow-1 d-flex flex-wrap">
                         
 
                         @if (User.Identity?.IsAuthenticated == true)
@@ -72,16 +72,10 @@
                             
                             <li class="nav-item">
                                 <a class="nav-link @(currentAction == "ContactStep0" && currentController == "Feedback" ? "active" : "") text-dark"
-                                   asp-controller="Feedback" asp-action="ContactStep0">Customer</a>
+                                   asp-controller="Feedback" asp-action="ContactStep0">Send Message</a>
                             </li>
-                            @* <li class="nav-item">
-                                <a class="nav-link @(currentAction == "Privacy" && currentController == "Home" ? "active" : "") text-dark"
-                                   asp-controller="Home" asp-action="Privacy">Company</a>
-                            </li> *@
-                            <li class="nav-item">
-                                <a class="nav-link @(currentAction == "Account" && currentController == "Home" ? "active" : "") text-dark"
-                                   asp-controller="Home" asp-action="Account">Company</a>
-                            </li>
+                            
+                            
                             <li class="nav-item">
                                 <a class="nav-link @(currentAction == "AboutUs" && currentController == "Home" ? "active" : "") text-dark"
                                    asp-controller="Home" asp-action="AboutUs">About Us</a>
@@ -89,6 +83,10 @@
                             <li class="nav-item">
                                 <a class="nav-link @(currentAction == "ContactUs" && currentController == "Home" ? "active" : "") text-dark"
                                    asp-controller="Home" asp-action="ContactUs">Contact Us</a>
+                            </li>
+                            <li class="nav-item ms-lg-auto">
+                                <a class="nav-link @(currentAction == "Account" && currentController == "Home" ? "active" : "") text-dark"
+                                   asp-controller="Home" asp-action="Account">Company</a>
                             </li>
                             
                         }

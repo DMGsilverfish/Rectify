@@ -8,11 +8,12 @@
 
 <head>
     <link rel="stylesheet" href="~/css/Customer.css" asp-append-version="true" />
+
 </head>
 
 <div class="container">
     <div class="box">
-        <h2>Choose the company</h2>
+        <h2>Hello! Which company would you like to talk to?</h2>
         <form asp-action="ContactStep0" method="post">
             <div style="display: flex; gap: 20px; align-items: center; margin-bottom: 20px;">
                 <div id="logoContainer" style="display: @(Model.LogoImageBase64 != null ? "block" : "none")">

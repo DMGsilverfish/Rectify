@@ -79,44 +79,65 @@
                 object-fit: cover;
             }
 
+        .box {
+            border: 1px solid #ccc; /* light gray border */
+            padding: 10px; /* some padding inside the border */
+            box-sizing: border-box; /* so padding doesn't increase overall size */
+            border-radius: 8px;
+        }
+
+
+        .checkbox-grey .form-check-input[type="checkbox"]:checked {
+            background-color: grey !important;
+            border-color: grey !important;
+        }
+
+        .form-control:focus {
+            border-color: #ff1493;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(255, 20, 147, 0.25);
+        }
+
     </style>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
 
 </head>
 
-<form asp-action="AddCompany" asp-controller="Account" method="post" enctype="multipart/form-data">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<div class="container">
+    <div class="box">
+        <form asp-action="AddCompany" asp-controller="Account" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <div class="mb-3">
-        <label asp-for="CompanyName" class="form-label"></label>
-        <input asp-for="CompanyName" class="form-control" required />
-        <span asp-validation-for="CompanyName" class="text-danger"></span>
+            <div class="mb-3">
+                <label asp-for="CompanyName" class="form-label"></label>
+                <input asp-for="CompanyName" class="form-control" required />
+                <span asp-validation-for="CompanyName" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="City" class="form-label"></label>
+                <input asp-for="City" class="form-control" required />
+                <span asp-validation-for="City" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="BranchAddress" class="form-label"></label>
+                <input asp-for="BranchAddress" class="form-control" required />
+                <span asp-validation-for="BranchAddress" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="LogoImageFile" class="form-label"></label>
+                <input asp-for="LogoImageFile" type="file" class="form-control" accept="image/*" />
+                <span asp-validation-for="LogoImageFile" class="text-danger"></span>
+            </div>
+
+            <input type="submit" value="Add Company" class="btn btn-outline-pink" />
+
+            
+        </form>
     </div>
-
-    <div class="mb-3">
-        <label asp-for="City" class="form-label"></label>
-        <input asp-for="City" class="form-control" required />
-        <span asp-validation-for="City" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="BranchAddress" class="form-label"></label>
-        <input asp-for="BranchAddress" class="form-control" required />
-        <span asp-validation-for="BranchAddress" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="LogoImageFile" class="form-label"></label>
-        <input asp-for="LogoImageFile" type="file" class="form-control" accept="image/*" />
-        <span asp-validation-for="LogoImageFile" class="text-danger"></span>
-    </div>
-
-    <input type="submit" value="Add Company" class="btn btn-pink w-100 p-2" />
-
-    <div class="text-center mt-3">
-        <a asp-controller="Home" asp-action="Privacy" class="text-decoration-none">Back</a>
-    </div>
-</form>
+</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

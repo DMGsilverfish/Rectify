@@ -90,6 +90,17 @@
             z-index: 1; /* ensures the header is above body rows */
         }
 
+        .checkbox-grey .form-check-input[type="checkbox"]:checked {
+            background-color: grey !important;
+            border-color: grey !important;
+        }
+
+        .form-control:focus {
+            border-color: #ff1493;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(255, 20, 147, 0.25);
+        }
+
     </style>
     <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
@@ -153,22 +164,22 @@
             <div class="col-md-3">
                 <label>Status:</label>
                 <div class="border rounded p-2">
-                    <div class="form-check">
+                    <div class="form-check checkbox-grey">
                         <input class="form-check-input status-filter" type="checkbox" value="Open" id="statusOpen" checked>
                         <label class="form-check-label" for="statusOpen">Open</label>
                     </div>
-                    <div class="form-check">
+                    <div class="form-check checkbox-grey">
                         <input class="form-check-input status-filter" type="checkbox" value="Pending" id="statusPending" checked>
                         <label class="form-check-label" for="statusPending">Pending</label>
                     </div>
-                    <div class="form-check">
+                    <div class="form-check checkbox-grey">
                         <input class="form-check-input status-filter" type="checkbox" value="Closed" id="statusClosed">
                         <label class="form-check-label" for="statusClosed">Closed</label>
                     </div>
                 </div>
             </div>
             <div class="col-md-3 d-flex align-items-end">
-                <button class="btn btn-primary w-100" onclick="applyTicketFilters()">
+                <button class="btn btn-outline-pink w-100" onclick="applyTicketFilters()">
                     <i class="bi bi-funnel-fill me-2"></i> Filter
                 </button>
             </div>
@@ -179,15 +190,15 @@
         <table class="table table-bordered mb-0 sticky-header">
             <thead>
                 <tr>
-                    <th>Message ID</th>
+                    @* <th>Message ID</th> *@
                     @if (Model.ShowCompanyInfo)
                     {
                         <th>Company</th>
                         <th>Branch/Address</th>
                     }
                     <th class="d-none d-md-table-cell">Date</th>
-                    <th>Status</th>
                     <th>Message</th>
+                    <th>Status</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -195,15 +206,15 @@
                 @foreach (var ticket in Model.Tickets)
                 {
                     <tr>
-                        <td>@ticket.TicketID</td>
+                        @* <td>@ticket.TicketID</td> *@
                         @if (Model.ShowCompanyInfo)
                         {
                             <td>@ticket.CompanyName</td>
                             <td>@ticket.BranchAddress</td>
                         }
                         <td class="d-none d-md-table-cell">@ticket.DateOfMessage.ToShortDateString()</td>
-                        <td>@ticket.Status</td>
                         <td>@ticket.Message</td>
+                        <td>@ticket.Status</td>
                         <td>
                             <button class="btn btn-outline-pink btn-sm"
                                     onclick="openStatusModal('@ticket.TicketID', '@ticket.Status')">

@@ -674,7 +674,7 @@ namespace Rectify.Controllers
 
                 statCards.Add(new TicketStatsCard
                 {
-                    Title = $"{status} Tickets",
+                    Title = $"{status}",
                     Total = totalCurrent,
                     Average = average,
                     PercentChange = Math.Round(percentChange, 1)

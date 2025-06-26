@@ -10,6 +10,12 @@
 
 <head>
     <style>
+
+        .checkbox-grey .form-check-input[type="checkbox"]:checked {
+            background-color: grey !important;
+            border-color: grey !important;
+        }
+
         .form-control:focus {
             border-color: #ff1493;
             outline: none;
@@ -59,7 +65,7 @@
                 <input asp-for="OwnerImageFile" class="form-control" type="file" accept="image/*" />
                 <span asp-validation-for="OwnerImageFile" class="text-danger"></span>
             </div>
-            <div class="form-check mb-3">
+            <div class="form-check mb-3 checkbox-grey">
                 <input asp-for="Reports" class="form-check-input" type="checkbox" />
                 <label asp-for="Reports" class="form-check-label"></label>
                 <span asp-validation-for="Reports" class="text-danger"></span>

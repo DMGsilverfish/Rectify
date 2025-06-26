@@ -10,6 +10,12 @@
 
 <head>
     <style>
+
+        .checkbox-grey .form-check-input[type="checkbox"]:checked {
+            background-color: grey !important;
+            border-color: grey !important;
+        }
+
         .form-control:focus {
             border-color: #ff1493;
             outline: none;
@@ -39,7 +45,7 @@
                     Forgot Password?
                 </a>
             </div>
-            <div class="form-check mb-3">
+            <div class="form-check mb-3 checkbox-grey">
                 <label class="form-check-label">
                     <input asp-for="RememberMe" class="form-check-input" />
                     @Html.DisplayNameFor(a => a.RememberMe)
@@ -55,13 +61,6 @@
                 Sign in with Google
             </a>
         </div>
-
-        
-
-        <div class="text-center">
-            <a asp-controller="Home" asp-action="Index" class="text-decoration-none mt-3">Back</a>
-        </div>
-
 
     </div>
 </div>

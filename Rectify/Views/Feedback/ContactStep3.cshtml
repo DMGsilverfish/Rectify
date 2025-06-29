@@ -31,7 +31,7 @@
         }
         <form asp-action="ContactStep3" method="post">
             <div class="form-group">
-                <label asp-for="Contact">Contact Info:</label>
+                @* <label asp-for="Contact">Contact Info:</label> *@
                 <input asp-for="Contact" class="form-control" autocomplete="email" placeholder="Email or Phone" required/>
                 <span asp-validation-for="Contact" class="text-danger"></span>
             </div>

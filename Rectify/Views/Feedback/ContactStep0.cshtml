@@ -9,6 +9,33 @@
 <head>
     <link rel="stylesheet" href="~/css/Customer.css" asp-append-version="true" />
 
+    <style>
+        /* Hovered option */
+        .select2-results__option--highlighted {
+            background-color: #f4b6cb !important;
+            color: black !important;
+        }
+
+        /* Selected option */
+        .select2-results__option[aria-selected="true"] {
+            background-color: #f4b6cb !important;
+            color: black !important;
+        }
+
+        /* Optional: style the visible select box */
+        .select2-selection {
+            border-color: #f4b6cb !important;
+            color: black !important;
+        }
+
+        /* Ensure text in selected item is black */
+        .select2-selection__rendered {
+            color: black !important;
+        }
+    </style>
+
+
+
 </head>
 
 <div class="container">
@@ -26,7 +53,7 @@
             </div>
 
             <div class="form-group">
-                <label asp-for="SelectedCompanyId">Select Company:</label>
+                @* <label asp-for="SelectedCompanyId">Select Company:</label> *@
                 <select asp-for="SelectedCompanyId" asp-items="Model.CompanyBranchOptions" class="form-control select2" id="companyBranchSelect" required>
                     <option value="">-- Select Company and Branch --</option>
                 </select>

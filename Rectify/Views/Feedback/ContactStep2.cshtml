@@ -31,7 +31,7 @@
 
         <form asp-action="ContactStep2" method="post">
             <div class="form-group">
-                <label asp-for="CustomerName">Fullname:</label>
+                @* <label asp-for="CustomerName">Fullname:</label> *@
                 <input asp-for="CustomerName" class="form-control" placeholder="Fullname" required/>
                 <span asp-validation-for="CustomerName" class="text-danger"></span>
             </div>

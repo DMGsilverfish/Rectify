@@ -353,6 +353,17 @@ public class FeedbackController : Controller
         string ticketNumber = (ticketCountToday + 1).ToString("D5");
         string ticketID = $"{dateString}_{ticketNumber}";
 
+        string? contact = model.Contact;
+
+        if (!string.IsNullOrEmpty(contact) && contact.Contains('@'))
+        {
+            model.Email = contact; // If contact is an email, set Email field
+        }
+        else if (!string.IsNullOrEmpty(contact) && contact.All(char.IsDigit))
+        {
+            model.PhoneNumber = contact; // Otherwise, set PhoneNumber field
+        }
+
         if (companyId == -1) //if Other is selected
         {
             ViewBag.ShowProcessingPopup = true;
@@ -373,6 +384,22 @@ public class FeedbackController : Controller
             TempData.Keep("Message");
 
             //insert code for emailing
+            var subject = $"{companyName} (Other) - Rectify";
+            var body = $"Name: {customerName ?? "Anonymous"} \n" +
+                       $"Email: {model.Email} \n" +
+                       $"Phone: {model.PhoneNumber} \n" +
+                       $"Message: \n\n{message}";
+
+            try
+            {
+                // Replace with real recipient email
+                SendEmail("vanessad@yebo.co.za", subject, body);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error sending email for 'Other' company: " + ex.Message);
+                // Optional: Add error feedback to ModelState
+            }
 
             return View(viewModel); // Re-render the same ContactStep3 view
         }
@@ -385,23 +412,6 @@ public class FeedbackController : Controller
             Status = "Open",
             DateLastUpdated = currentDate
         };
-
-        //int nextCustomer = 1;
-        //if (_context.CustomerModel.Any())
-        //{
-        //    nextCustomer = _context.CustomerModel.Max(c =>  c.Id) + 1;
-        //}
-
-        string? contact = model.Contact;
-
-        if (!string.IsNullOrEmpty(contact) && contact.Contains('@'))
-        {
-            model.Email = contact; // If contact is an email, set Email field
-        }
-        else if (!string.IsNullOrEmpty(contact) && contact.All(char.IsDigit))
-        {
-            model.PhoneNumber = contact; // Otherwise, set PhoneNumber field
-        }
 
             var customer = new CustomerModel
             {

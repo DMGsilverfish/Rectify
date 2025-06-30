@@ -762,15 +762,30 @@ namespace Rectify.Controllers
         {
             if (ModelState.IsValid)
             {
-                // Save input in variables (for now)
                 var fullName = model.FullName;
                 var email = model.Email;
                 var message = model.Message;
 
-                // You can later email this, store in DB, etc.
+                // Compose email
+                var subject = "Contact Us Query - Rectify";
+                var body = $"Name: {fullName}\nEmail: {email}\nMessage:\n\n{message}";
 
-                ViewBag.Message = "Your message was sent!";
-                ModelState.Clear(); // Optional: clear form after submit
+                try
+                {
+                    // Replace this with your actual recipient address
+                    SendEmail("vanessad@yebo.co.za", subject, body);
+                    ViewBag.Message = "Your message was sent!";
+                    ViewBag.MessageType = "success";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Failed to send contact email: " + ex.Message);
+                    ViewBag.Message = "There was an error sending your message.";
+                    ViewBag.MessageType = "danger";
+
+                }
+
+                ModelState.Clear(); // Optionally reset the form
             }
 
             return View();
@@ -781,6 +796,8 @@ namespace Rectify.Controllers
         {
             return View();
         }
+
+
 
         
 

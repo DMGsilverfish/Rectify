@@ -773,7 +773,7 @@ namespace Rectify.Controllers
                 try
                 {
                     // Replace this with your actual recipient address
-                    SendEmail("vanessad@yebo.co.za", subject, body);
+                    SendEmail("rectify921@gmail.com", subject, body);
                     ViewBag.Message = "Your message was sent!";
                     ViewBag.MessageType = "success";
                 }

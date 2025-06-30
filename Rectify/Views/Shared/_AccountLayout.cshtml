@@ -19,19 +19,23 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img src="~/images/LogoPlaceholder.jpeg" alt="Logo" style="height: 35px;" />
-                    Rectify
-                </a>
+                <div class="d-flex align-items-center">
+                    <!-- Toggler on the far left -->
+                    <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar"
+                            aria-controls="mainNavbar" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1 d-flex flex-wrap">
-                        
+                    <!-- Logo and brand -->
+                    <a class="navbar-brand d-flex align-items-center gap-2" asp-area="" asp-controller="Home" asp-action="Index">
+                        <img src="~/images/LogoPlaceholder.jpeg" alt="Logo" style="height: 35px;" />
+                        Rectify
+                    </a>
+                </div>
 
+                <!-- Navigation links -->
+                <div class="collapse navbar-collapse" id="mainNavbar">
+                    <ul class="navbar-nav flex-grow-1 d-flex flex-wrap align-items-start">
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item">
@@ -49,32 +53,24 @@
                             <li class="nav-item">
                                 <a class="nav-link @(currentAction == "Reports" && currentController == "Home" ? "active" : "") text-dark"
                                    asp-controller="Home" asp-action="Reports">Report</a>
-                            </li>                           
+                            </li>
                             <li class="nav-item">
                                 <a href="#" class="nav-link text-dark"
                                    onclick="handleQrCodeCompanySelect('@User.FindFirstValue(System.Security.Claims.ClaimTypes.NameIdentifier)'); return false;">
                                     QR Code
                                 </a>
                             </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link text-dark" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();">
-                                    Logout
-                                </a>
+                            <li class="nav-item ms-lg-auto">
+                                <a class="nav-link @(currentAction == "Logout" && currentController == "Account" ? "active" : "") text-dark"
+                                   asp-controller="Account" asp-action="Logout">Logout</a>
                             </li>
-
-                            <form id="logoutForm" asp-controller="Account" asp-action="Logout" method="post" class="d-none"></form>
-
-
                         }
                         else
                         {
-                            
                             <li class="nav-item">
                                 <a class="nav-link @(currentAction == "ContactStep0" && currentController == "Feedback" ? "active" : "") text-dark"
                                    asp-controller="Feedback" asp-action="ContactStep0">Send Message</a>
                             </li>
-                            
-                            
                             <li class="nav-item">
                                 <a class="nav-link @(currentAction == "AboutUs" && currentController == "Home" ? "active" : "") text-dark"
                                    asp-controller="Home" asp-action="AboutUs">About Us</a>
@@ -87,11 +83,7 @@
                                 <a class="nav-link @(currentAction == "Account" && currentController == "Home" ? "active" : "") text-dark"
                                    asp-controller="Home" asp-action="Account">Company</a>
                             </li>
-                            
                         }
-
-
-                        @* <partial name="_LoginPartial" /> *@
                     </ul>
                 </div>
             </div>

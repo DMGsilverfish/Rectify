@@ -393,7 +393,7 @@ public class FeedbackController : Controller
             try
             {
                 // Replace with real recipient email
-                SendEmail("vanessad@yebo.co.za", subject, body);
+                SendEmail("rectify921@gmail.com", subject, body);
             }
             catch (Exception ex)
             {

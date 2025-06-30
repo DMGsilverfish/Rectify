@@ -30,9 +30,9 @@
         <form asp-action="ContactStep1" method="post">
 
             <div class="form-group" style="position: relative;">
-                <label asp-for="Message">Message:</label>
-                <textarea asp-for="Message" class="form-control light-grey-bg" id="messageTextarea" required ></textarea>
-                <button type="button" title="Click to start/stop voice input" id="micBtn" style="position: absolute; right: 10px; top: 35px; border: none; background: none; cursor: pointer;">
+                @* <label asp-for="Message">Message:</label> *@
+                <textarea asp-for="Message" class="form-control light-grey-bg" id="messageTextarea" placeholder="Type Message here" required ></textarea>
+                <button type="button" title="Click to start/stop voice input" id="micBtn" style="position: absolute; right: 5px; top: 5px; border: none; background: none; cursor: pointer;">
                     🎤
                 </button>
                 <span asp-validation-for="Message" class="text-danger"></span>

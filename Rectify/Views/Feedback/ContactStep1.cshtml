@@ -22,10 +22,20 @@
 
             <div>
                 <h2>
-                    Hi, <span style="color: #ff1493">@Model.OwnerName from @Model.CompanyName</span> here, let's rectify your experience
+                    Hi,
+                    @if (!string.IsNullOrEmpty(Model.OwnerName))
+                    {
+                        <span style="color: #ff1493">@Model.OwnerName from @Model.CompanyName</span>
+                    }
+                    else
+                    {
+                        <span style="color: #ff1493">@Model.CompanyName</span>
+                    }
+                    here, let's rectify your experience
                 </h2>
                 <h2>What happened?</h2>
             </div>
+
         </div>
         <form asp-action="ContactStep1" method="post">
 

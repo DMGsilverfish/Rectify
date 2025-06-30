@@ -71,7 +71,26 @@
                 $(document).ready(function () {
             $('.select2').select2({
                 placeholder: "Select or search company and branch",
-                allowClear: true
+                allowClear: true,
+                matcher: function (params, data) {
+                // If there’s no search term, return all data
+                if ($.trim(params.term) === '') {
+                    return data;
+                }
+
+                // Always show "Other"
+                if (data.text === 'Other') {
+                    return data;
+                }
+
+                // Default match logic
+                if (data.text.toLowerCase().includes(params.term.toLowerCase())) {
+                    return data;
+                }
+
+                // No match
+                return null;
+            }
             });
 
             function loadImages(companyId) {

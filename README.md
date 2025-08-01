@@ -2,6 +2,8 @@
 
 ![Customer Feedback Flow](https://github.com/DMGsilverfish/Rectify/tree/master/Rectify/wwwroot/images/CustomerFeedback.png)
 
+[![ASP.NET Core Version](https://img.shields.io/badge/ASP.NET%20Core-8.0-blue)](https://learn.microsoft.com/aspnet/core/)
+
 > **Give customers a voice. Give businesses actionable insights.**
 
 ---

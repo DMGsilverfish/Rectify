@@ -40,11 +40,11 @@
                 <input asp-for="Password" class="form-control" />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
-            <div class="float-end">
+            @* <div class="float-end">
                 <a asp-controller="Account" asp-action="VerifyEmail" class="text-decoration-none">
                     Forgot Password?
                 </a>
-            </div>
+            </div> *@
             <div class="form-check mb-3 checkbox-grey">
                 <label class="form-check-label">
                     <input asp-for="RememberMe" class="form-check-input" />
@@ -55,12 +55,12 @@
 
             
         </form>
-        <div class="text-center mt-3">
+        @* <div class="text-center mt-3">
             <a class="btn btn-outline-dark w-100" href="@Url.Action("ExternalLogin", "Account", new { provider = "Google", returnUrl = "/" })">
                 <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" width="20" class="me-2" />
                 Sign in with Google
             </a>
-        </div>
+        </div> *@
 
     </div>
 </div>

@@ -128,6 +128,7 @@ namespace Rectify.Controllers
 
         public IActionResult Register()
         {
+            TempData["AdminPassword"] = "@RectifyAccounts1234";
             return View();
         }
 

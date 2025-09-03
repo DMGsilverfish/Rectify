@@ -6,6 +6,7 @@
 @{
     ViewData["Title"] = "Register";
     Layout = "_AccountLayout";
+    var adminPassword = TempData["AdminPassword"] as string ?? "";
 }
 
 <head>
@@ -62,8 +63,46 @@
     </div>
 </div>
 
+<!-- Password Modal (always shown first) -->
+<div class="modal fade show" id="passwordModal" tabindex="-1" aria-modal="true" style="display:block; background-color: rgba(0,0,0,0.6); z-index: 1055;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content p-3">
+            <div class="modal-header">
+                <h5 class="modal-title">Admin Password Required</h5>
+            </div>
+            <div class="modal-body">
+                <p>Enter admin password. If you do not have the password, please contact us to become part of Rectify, a better business solution!</p>
+                <input type="password" id="adminPassword" class="form-control" placeholder="Enter Password" />
+                <div class="text-danger mt-2 d-none" id="passwordError">Incorrect password. Please try again.</div>
+            </div>
+            <div class="modal-footer d-flex justify-content-between">
+                <a class="btn btn-outline-secondary" href="@Url.Action("ContactUs", "Home")">Contact Us</a>
+                <button class="btn btn-outline-pink" onclick="checkPassword()">Enter Password</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+    <script>
+        const correctPassword = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(adminPassword));
+
+        function checkPassword() {
+            const input = document.getElementById("adminPassword").value;
+            const error = document.getElementById("passwordError");
+
+            if (input === correctPassword) {
+                document.getElementById("passwordModal").style.display = "none";
+                document.body.classList.remove("modal-open");
+            } else {
+                error.classList.remove("d-none");
+            }
+        }
+
+        // Disable scrolling behind modal
+        document.body.classList.add("modal-open");
+    </script>
 }

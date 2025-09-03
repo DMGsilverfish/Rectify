@@ -40,3 +40,20 @@
     .btn-pink:active {
         transform: scale(0.95);
     }
+
+.btn-outline-pink {
+    color: #ff1493;
+    border: 2px solid #ff1493;
+    background-color: transparent;
+    border-radius: 0.25rem;
+    padding: 0.375rem 0.75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    transition: background-color 0.15s ease-in-out, color 0.15s ease-in-out;
+}
+
+    .btn-outline-pink:hover {
+        background-color: #ff1493;
+        color: #fff;
+        border-color: #ff1493;
+    }

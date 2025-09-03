@@ -208,16 +208,11 @@ namespace Rectify.Controllers
                 FullName = model.Name!,
                 PhoneNumber = model.PhoneNumber,
                 PreferredContact = model.PrefferedContact,
-                Reports = model.Reports
-                
+                Reports = model.Reports,
+                Status = "Pending",
+
             };
             var result = await userManager.CreateAsync(user, model.Password!);
-
-            //int nextCompany = 1;
-            //if (context.CustomerModel.Any())
-            //{
-            //    nextCompany = context.CompanyModel.Max(c => c.Id) + 1;
-            //}
 
             var company = new CompanyModel
             {

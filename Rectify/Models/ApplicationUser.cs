@@ -12,5 +12,7 @@ namespace Rectify.Models
 
         public string FullName { get; set; }
 
+        public string? Status { get; set; } = "Deactivated";
+
     }
 }

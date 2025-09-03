@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Rectify.Data;
 
@@ -11,9 +12,11 @@ using Rectify.Data;
 namespace Rectify.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250903141203_AddStatusToApplicationUser")]
+    partial class AddStatusToApplicationUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -267,7 +270,7 @@ namespace Rectify.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("CompanyModel", (string)null);
+                    b.ToTable("CompanyModel");
                 });
 
             modelBuilder.Entity("Rectify.Models.CustomerModel", b =>
@@ -300,7 +303,7 @@ namespace Rectify.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CustomerModel", (string)null);
+                    b.ToTable("CustomerModel");
                 });
 
             modelBuilder.Entity("Rectify.Models.TicketModel", b =>
@@ -323,7 +326,7 @@ namespace Rectify.Migrations
 
                     b.HasKey("TicketID");
 
-                    b.ToTable("TicketModel", (string)null);
+                    b.ToTable("TicketModel");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

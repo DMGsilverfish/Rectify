@@ -41,13 +41,19 @@ namespace Rectify.Controllers
 
                 if (result.Succeeded)
                 {
+                    // get the logged-in user
+                    var user = await userManager.FindByEmailAsync(model.Email);
+
+                    // check if user is in Admin role
+                    if (await userManager.IsInRoleAsync(user, "Admin"))
+                    {
+                        return RedirectToAction("Dashboard", "Admin");
+                    }
+
+                    // default redirect for non-admins
                     return RedirectToAction("Privacy", "Home");
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Email or Password is incorrect");
-                    return View(model);
-                }
+                }          
+                ModelState.AddModelError("", "Email or Password is incorrect");     
             }
             return View(model);
         }

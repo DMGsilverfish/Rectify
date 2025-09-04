@@ -1,8 +1,13 @@
 # Rectify – QR-Powered Customer Feedback Platform
 
-![Customer Feedback Flow](https://github.com/DMGsilverfish/Rectify/tree/master/Rectify/wwwroot/images/CustomerFeedback.png)
 
-[![ASP.NET Core Version](https://img.shields.io/badge/ASP.NET%20Core-8.0-blue)](https://learn.microsoft.com/aspnet/core/)
+[![ASP.NET Core](https://img.shields.io/badge/ASP.NET%20Core-8.0-blue)](https://learn.microsoft.com/aspnet/core/)
+[![C#](https://img.shields.io/badge/C%23-239120?style=flat&logo=c-sharp&logoColor=white)](https://learn.microsoft.com/dotnet/csharp/)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=flat&logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![SQL Server](https://img.shields.io/badge/SQL%20Server-CC2927?style=flat&logo=microsoftsqlserver&logoColor=white)](https://learn.microsoft.com/sql/)
+[![LINQ](https://img.shields.io/badge/LINQ-512BD4?style=flat&logo=.net&logoColor=white)](https://learn.microsoft.com/dotnet/csharp/programming-guide/concepts/linq/)
 
 > **Give customers a voice. Give businesses actionable insights.**
 

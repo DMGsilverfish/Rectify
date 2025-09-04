@@ -61,13 +61,19 @@ public class FeedbackController : Controller
     {
         if (!ModelState.IsValid)
         {
-            model.CompanyBranchOptions = _context.CompanyModel
-                .OrderBy(c => c.CompanyName)
-                .Select(c => new SelectListItem
+            model.CompanyBranchOptions = (
+                from c in _context.CompanyModel
+                join u in _context.Users on c.UserId equals u.Id
+                join ur in _context.UserRoles on u.Id equals ur.UserId
+                join r in _context.Roles on ur.RoleId equals r.Id
+                where u.Status == "Active" && r.Name == "Owner"
+                orderby c.CompanyName
+                select new SelectListItem
                 {
                     Value = c.Id.ToString(),
                     Text = c.CompanyName + " - " + c.BranchAddress
                 }).ToList();
+
             return View(model);
         }
 

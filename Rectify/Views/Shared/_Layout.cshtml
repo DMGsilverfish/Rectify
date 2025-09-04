@@ -42,6 +42,7 @@
                     <ul class="navbar-nav flex-grow-1 d-flex flex-wrap align-items-start">
                         @if (User.Identity?.IsAuthenticated == true)
                         {
+                            //Owner users
                             if (User.IsInRole("Owner"))
                             {
                                 <li class="nav-item">
@@ -70,15 +71,26 @@
                                     <a class="nav-link @(currentAction == "Logout" && currentController == "Account" ? "active" : "") text-dark"
                                        asp-controller="Account" asp-action="Logout">Logout</a>
                                 </li>
+
+                            //Admin users
                             } else if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                    <a class="nav-link @(currentAction == "Privacy" && currentController == "Home" ? "active" : "") text-dark"
-                                       asp-controller="Home" asp-action="Privacy">Test</a>
+                                    <a class="nav-link @(currentAction == "Dashboard" && currentController == "Admin" ? "active" : "") text-dark"
+                                       asp-controller="Admin" asp-action="Dashboard">Dashboard</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link @(currentAction == "ManageUsers" && currentController == "Admin" ? "active" : "") text-dark"
+                                       asp-controller="Admin" asp-action="ManageUsers">Manage Users</a>
+                                </li>
+                                <li class="nav-item ms-lg-auto">
+                                    <a class="nav-link @(currentAction == "Logout" && currentController == "Account" ? "active" : "") text-dark"
+                                       asp-controller="Account" asp-action="Logout">Logout</a>
                                 </li>
                             }
 
                         }
+                            //Customer users
                         else
                         {
                             <li class="nav-item">

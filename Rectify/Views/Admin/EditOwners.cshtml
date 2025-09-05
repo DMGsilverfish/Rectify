@@ -9,15 +9,11 @@
         <form asp-action="EditOwners" method="post">
             <input type="hidden" asp-for="Id" />
 
-            <div class="form-group">
-                <label>User Name</label>
-                <input type="text" class="form-control" value="@Model.UserName" readonly />
+            <div class="form-group d-flex">
+                <p class="me-4"><b>User Name:</b> @Model.UserName</p>
+                <p><b>Email:</b> @Model.Email</p>
             </div>
 
-            <div class="form-group">
-                <label>Email</label>
-                <input type="text" class="form-control" value="@Model.Email" readonly />
-            </div>
 
             <div class="form-group">
                 <label asp-for="Status"></label>

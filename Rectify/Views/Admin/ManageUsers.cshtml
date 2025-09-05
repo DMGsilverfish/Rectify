@@ -122,7 +122,7 @@
                 <tr>
                     <td>@owner.UserName</td>
                     <td>@owner.Email</td>
-                    <td>
+                    <td class="text-center">
                         @{
                             string statusClass = owner.Status switch
                             {
@@ -138,7 +138,7 @@
                     </td>
 
                     <td>@owner.BusinessCount</td>
-                    <td>
+                    <td class="text-center">
                         <a asp-controller="Admin" asp-action="EditOwners" asp-route-id="@owner.UserId"
                            class="btn btn-outline-primary btn-sm">
                             Edit

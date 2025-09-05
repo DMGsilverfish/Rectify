@@ -29,7 +29,19 @@ namespace Rectify.Controllers
         [Authorize]
         public IActionResult Dashboard()
         {
-            return View();
+            var emailCount = context.Users
+                .Count(u => u.Status == "Active" && u.PreferredContact == "Email");
+
+            var whatsappCount = context.Users
+                .Count(u => u.Status == "Active" && u.PreferredContact == "WhatsApp");
+
+            var vm = new AdminDashboardViewModel
+            {
+                EmailCount = emailCount,
+                WhatsappCount = whatsappCount
+            };
+
+            return View(vm);
         }
 
         [Authorize]
@@ -66,8 +78,41 @@ namespace Rectify.Controllers
                 return NotFound();
             }
 
-            return View(owner); // later you can map to a viewmodel if needed
+            var statuses = System.Text.Json.JsonSerializer.Deserialize<List<string>>(
+                System.IO.File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "Data", "statuses.json"))
+            );
+
+            var vm = new EditOwnerStatusViewModel
+            {
+                Id = owner.Id,
+                UserName = owner.FullName,
+                Email = owner.Email,
+                Status = owner.Status,
+                AvailableStatuses = statuses
+            };
+
+            return View(vm); // later you can map to a viewmodel if needed
         }
+
+        [HttpPost]
+        [Authorize]
+        public IActionResult EditOwners(EditOwnerStatusViewModel model)
+        {
+            var owner = context.Users.FirstOrDefault(u => u.Id == model.Id);
+
+            if (owner == null)
+            {
+                return NotFound();
+            }
+
+            // Update only the status
+            owner.Status = model.Status;
+
+            context.SaveChanges();
+
+            return RedirectToAction("ManageUsers");
+        }
+
 
 
     }

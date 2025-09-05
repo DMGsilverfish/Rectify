@@ -78,7 +78,12 @@ select:focus {
     box-shadow: 0 0 0 0.2rem rgba(255, 20, 147, 0.25); /* Optional pink glow */
 }
 
-
+.box {
+    border: 1px solid #ccc; /* light gray border */
+    padding: 10px; /* some padding inside the border */
+    box-sizing: border-box; /* so padding doesn't increase overall size */
+    border-radius: 8px;
+}
 
 
 

@@ -246,6 +246,9 @@ namespace Rectify.Controllers
             
             if (result.Succeeded)
             {
+                var roleName = "Owner-Pending";
+                await userManager.AddToRoleAsync(user, roleName);
+                
                 
                 context.CompanyModel.Add(company);
                 await context.SaveChangesAsync();

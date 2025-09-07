@@ -50,7 +50,7 @@ namespace Rectify.Controllers
             var owners = (from u in context.Users
                           join ur in context.UserRoles on u.Id equals ur.UserId
                           join r in context.Roles on ur.RoleId equals r.Id
-                          where r.Name == "Owner"
+                          where r.Name != "Admin" 
                           select new OwnerUserViewModel
                           {
                               UserId = u.Id,
@@ -105,13 +105,48 @@ namespace Rectify.Controllers
                 return NotFound();
             }
 
-            // Update only the status
+            // Update the status field
             owner.Status = model.Status;
+
+            // If status was changed to Active, ensure role is updated
+            if (model.Status == "Active")
+            {
+                // Get role IDs
+                var ownerRole = context.Roles.FirstOrDefault(r => r.Name == "Owner");
+                var pendingRole = context.Roles.FirstOrDefault(r => r.Name == "Owner-Pending");
+
+                if (ownerRole != null)
+                {
+                    // Find current roles for this user
+                    var userRoles = context.UserRoles.Where(ur => ur.UserId == owner.Id).ToList();
+
+                    // Remove "Owner-Pending" if present
+                    if (pendingRole != null)
+                    {
+                        var pendingRoleEntry = userRoles.FirstOrDefault(ur => ur.RoleId == pendingRole.Id);
+                        if (pendingRoleEntry != null)
+                        {
+                            context.UserRoles.Remove(pendingRoleEntry);
+                        }
+                    }
+
+                    // Add "Owner" role if not already assigned
+                    if (!userRoles.Any(ur => ur.RoleId == ownerRole.Id))
+                    {
+                        context.UserRoles.Add(new IdentityUserRole<string>
+                        {
+                            UserId = owner.Id,
+                            RoleId = ownerRole.Id
+                        });
+                    }
+                }
+            }
 
             context.SaveChanges();
 
             return RedirectToAction("ManageUsers");
         }
+
 
 
 

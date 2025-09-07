@@ -37,26 +37,49 @@ namespace Rectify.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, false);
+                var result = await signInManager.PasswordSignInAsync(
+                    model.Email,
+                    model.Password,
+                    model.RememberMe,
+                    lockoutOnFailure: false
+                );
 
                 if (result.Succeeded)
                 {
                     // get the logged-in user
                     var user = await userManager.FindByEmailAsync(model.Email);
+                    
 
-                    // check if user is in Admin role
+                    if (user.Status == "Deactivated")
+                    {
+                        await signInManager.SignOutAsync();
+                        ModelState.AddModelError("", "Your account has been deactivated. Please contact support.");
+                        return View(model);
+                    }
+
+                    // check role
                     if (await userManager.IsInRoleAsync(user, "Admin"))
                     {
                         return RedirectToAction("Dashboard", "Admin");
                     }
+                    else if (await userManager.IsInRoleAsync(user, "Owner"))
+                    {
+                        return RedirectToAction("Privacy", "Home");
+                    }
+                    else
+                    {
+                        // sign out immediately, not allowed to log in
+                        await signInManager.SignOutAsync();
+                        return RedirectToAction("RegisterPending", "Account");
+                    }
+                }
 
-                    // default redirect for non-admins
-                    return RedirectToAction("Privacy", "Home");
-                }          
-                ModelState.AddModelError("", "Email or Password is incorrect");     
+                ModelState.AddModelError("", "Email or Password is incorrect");
             }
+
             return View(model);
         }
+
 
         [HttpGet]
         public IActionResult ExternalLogin(string provider, string returnUrl = "/")
@@ -254,8 +277,8 @@ namespace Rectify.Controllers
                 await context.SaveChangesAsync();
 
 
-                await signInManager.SignInAsync(user, false);
-                return RedirectToAction("Privacy", "Home");
+                return RedirectToAction("RegisterPending", "Account");
+
             }
 
             foreach (var error in result.Errors)
@@ -265,6 +288,11 @@ namespace Rectify.Controllers
 
             TempData.Keep("RegisterData");
             return View(model);
+        }
+
+        public IActionResult RegisterPending()
+        {
+            return View();
         }
 
 

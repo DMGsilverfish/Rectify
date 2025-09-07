@@ -147,6 +147,11 @@ namespace Rectify.Controllers
             return RedirectToAction("ManageUsers");
         }
 
+        //[Authorize]
+        public IActionResult AddAdmin()
+        {
+            return View();
+        }
 
 
 

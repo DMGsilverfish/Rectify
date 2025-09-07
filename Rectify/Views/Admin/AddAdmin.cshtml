@@ -1,7 +1,71 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model Rectify.Models.ViewModels.RegisterViewModel
 @{
+    ViewData["Title"] = "Register";
+    Layout = "_AccountLayout";
 }
 
-<h1>Add Admin</h1>
+<head>
+    <style>
+
+        .checkbox-grey .form-check-input[type="checkbox"]:checked {
+            background-color: grey !important;
+            border-color: grey !important;
+        }
+
+        .form-control:focus {
+            border-color: #ff1493;
+            outline: none;
+            box-shadow: 0 0 0 0.2rem rgba(255, 20, 147, 0.25);
+        }
+
+    </style>
+</head>
+
+<div class="account-container">
+    <div class="account-box">
+        <h2 class="text-center mb-4">Add Admin</h2>
+        <form asp-action="AddAdmin" asp-controller="Admin" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="mb-3">
+                <label asp-for="Name" class="form-label"></label>
+                <input asp-for="Name" class="form-control" required />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <!-- CompanyName excluded for Admins -->
+
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" required />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="PhoneNumber" class="form-label"></label>
+                <input asp-for="PhoneNumber" class="form-control" required />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" required />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="ConfirmPassword" class="form-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" required />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+
+            <input type="submit" value="Register" class="btn btn-pink w-100 p-2" />
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

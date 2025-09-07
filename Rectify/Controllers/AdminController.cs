@@ -148,12 +148,74 @@ namespace Rectify.Controllers
         }
 
         //[Authorize]
+        [HttpGet]
         public IActionResult AddAdmin()
         {
             return View();
         }
 
+        [HttpPost]
+        public async Task<IActionResult> AddAdmin(RegisterViewModel model,
+    [FromServices] UserManager<ApplicationUser> userManager,
+    [FromServices] RoleManager<IdentityRole> roleManager)
+        {
+            if (!ModelState.IsValid)
+            {
+                // remove CompanyName validation error if we're in AddAdmin
+                ModelState.Remove("CompanyName");
+                if (!ModelState.IsValid)
+                    return View(model);
+            }
 
+            // Check if email exists
+            var existingEmail = await userManager.FindByEmailAsync(model.Email);
+            if (existingEmail != null)
+            {
+                ModelState.AddModelError("Email", "Email is already taken.");
+                return View(model);
+            }
+
+            // Check if phone exists
+            var existingPhone = userManager.Users.FirstOrDefault(u => u.PhoneNumber == model.PhoneNumber);
+            if (existingPhone != null)
+            {
+                ModelState.AddModelError("PhoneNumber", "Phone number is already taken.");
+                return View(model);
+            }
+
+            // Create new admin user
+            var user = new ApplicationUser
+            {
+                UserName = model.Email,
+                Email = model.Email,
+                PhoneNumber = model.PhoneNumber,
+                FullName = model.Name,   // Reuse Name field as FullName
+                Status = "Active"
+            };
+
+            var result = await userManager.CreateAsync(user, model.Password);
+
+            if (result.Succeeded)
+            {
+                // Ensure Admin role exists
+                if (!await roleManager.RoleExistsAsync("Admin"))
+                {
+                    await roleManager.CreateAsync(new IdentityRole("Admin"));
+                }
+
+                // Assign Admin role
+                await userManager.AddToRoleAsync(user, "Admin");
+
+                return RedirectToAction("ManageUsers", "Admin");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+
+            return View(model);
+        }
 
     }
 }

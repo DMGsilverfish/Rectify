@@ -31,6 +31,8 @@ This makes feedback **fast, private, and actionable**.
 - **Multiple Contact Options** – Choose between **Email** or **WhatsApp** communication.
 - **Responsive & Mobile-First Design** – Optimized for smartphones and tablets.
 - **Google Authentication** – Blocks spam and ensures real feedback.
+- **Role-Based Login** – Admins and Owners log in and register.
+- **Voice-to-Text** – For ease of use, Customers can talk to send a message.
 
 ---
 
